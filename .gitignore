@@ -3,7 +3,3 @@
 
 # Ignore Gradle build output directory
 build
-
-.settings/
-app/.settings
-app/bin

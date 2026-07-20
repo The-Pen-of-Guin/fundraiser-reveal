@@ -10,22 +10,25 @@ plugins {
     id 'application'
 }
 
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-}
-
 project.ext.lwjglVersion = "3.3.6"
 project.ext.lwjglNatives = "natives-windows"
 
+repositories {
+	mavenCentral()
+}
+
+def joglVersion = '2.6.0'
+
 dependencies {
-    // Use JUnit test framework.
-    testImplementation libs.junit
+    // Use JUnit Jupiter for testing.
+    testImplementation libs.junit.jupiter
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // This dependency is used by the application.
     implementation libs.guava
 
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	implementation "org.lwjgl:lwjgl"
 	implementation "org.lwjgl:lwjgl-assimp"
@@ -125,5 +128,11 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.example.App'
+    mainClass = 'com.fundraiser.animation.HelloWorld'
 }
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
