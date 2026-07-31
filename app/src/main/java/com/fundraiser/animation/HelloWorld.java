@@ -80,12 +80,14 @@ public class HelloWorld {
 			// Get the resolution of the primary monitor
 			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-			// Center the window
-			glfwSetWindowPos(
-				window,
-				(vidmode.width() - pWidth.get(0)) / 2,
-				(vidmode.height() - pHeight.get(0)) / 2
-			);
+			// Center the window, Wayland doesn't allow setting window position
+			if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND) {
+				glfwSetWindowPos(
+					window,
+					(vidmode.width() - pWidth.get(0)) / 2,
+					(vidmode.height() - pHeight.get(0)) / 2
+				);
+			}
 		} // the stack frame is popped automatically
 
 		// Make the OpenGL context current
@@ -107,7 +109,7 @@ public class HelloWorld {
 		if (vg == 0) throw new RuntimeException("Failed to create NanoVG context");
 
 		// Load a system font
-		int font = NanoVG.nvgCreateFont(vg, "roboto", "C:\\Users\\Isaia\\Documents\\Projects\\GIC_number_reveal\\number_reveal\\assets\\fonts\\Roboto\\static\\Roboto-Regular.ttf");
+		int font = NanoVG.nvgCreateFont(vg, "roboto", "path_to_font");
 		if (font == -1) System.err.println("Font failed to load - check the path");
 	}
 
