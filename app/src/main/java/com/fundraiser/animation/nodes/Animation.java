@@ -8,4 +8,12 @@ public class Animation {
 		this.startDelayMs = startDelayMs;
 		this.durationMs = durationMs;
 	}
+
+	public int getStartDelayMs() {
+		return startDelayMs;
+	}
+
+	public int getDurationMs() {
+		return durationMs;
+	}
 }
