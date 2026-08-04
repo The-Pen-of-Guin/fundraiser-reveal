@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'fundraiser-reveal'
-include('app', 'bridge')
+include('bezalel', 'bridge')
