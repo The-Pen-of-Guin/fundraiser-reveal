@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'fundraiser-reveal'
-include('app')
+include('app', 'bridge')
