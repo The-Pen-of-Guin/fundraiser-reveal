@@ -30,11 +30,6 @@ public class Animator {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
 
-		// targetAmount, delay, duration
-		animationNodes.add(new AnimationNode(50000, new SetAnimation(2000)));
-		animationNodes.add(new AnimationNode(100000, new CountupAnimation(2000, 3000)));
-		animationNodes.add(new AnimationNode(45000000, new ScrambleAnimation(2000, 8000)));
-
 		new Thread(() -> {
 			animationEngine.run();
 		}).start();
