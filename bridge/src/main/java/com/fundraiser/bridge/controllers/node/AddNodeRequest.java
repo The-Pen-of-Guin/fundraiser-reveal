@@ -1,6 +1,6 @@
 package com.fundraiser.bridge.controllers.node;
 
-public record AppendNodeRequest(
+public record AddNodeRequest(
 	Integer targetAmountCents,
 	AnimationRequest animation	
 ){}

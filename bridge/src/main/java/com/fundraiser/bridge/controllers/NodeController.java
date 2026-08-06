@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fundraiser.bridge.controllers.node.AppendNodeRequest;
+import com.fundraiser.bridge.controllers.node.AddNodeRequest;
 
 @RestController
 @RequestMapping("/api/v1/node")
 public class NodeController {
 	@PostMapping("/append")
 	public ResponseEntity<String> append(
-		@RequestBody AppendNodeRequest request
+		@RequestBody AddNodeRequest request
 	) {
-		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+		return ResponseEntity.ok("Hello Katie!");
 	}
 
 	@PostMapping("/add/{position}")
 	public ResponseEntity<String> add(
 		@PathVariable Integer position,
-		@RequestBody AppendNodeRequest request
+		@RequestBody AddNodeRequest request
 	) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
 	}
