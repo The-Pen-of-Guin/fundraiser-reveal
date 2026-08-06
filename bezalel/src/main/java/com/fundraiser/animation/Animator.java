@@ -22,6 +22,10 @@ public class Animator {
 
 	private AnimationEngine animationEngine = new AnimationEngine();
 
+	public void setAnimationNodes(Queue<AnimationNode> animationNodes) {
+		this.animationNodes = animationNodes;
+	}
+
 	public void run() {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);

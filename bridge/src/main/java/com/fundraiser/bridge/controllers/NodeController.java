@@ -1,6 +1,5 @@
 package com.fundraiser.bridge.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,18 +7,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.fundraiser.bridge.controllers.node.AddNodeRequest;
+import com.fundraiser.bridge.services.NodeService;
 
 @RestController
 @RequestMapping("/api/v1/node")
 public class NodeController {
+	private final NodeService nodeService;
+
+	public NodeController(
+		NodeService nodeService
+	) {
+		this.nodeService = nodeService;
+	}
+
 	@PostMapping("/append")
 	public ResponseEntity<String> append(
 		@RequestBody AddNodeRequest request
 	) {
-		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+		nodeService.appendNode(request);
+		return ResponseEntity.ok("Success!");
 	}
 
 	@PostMapping("/add/{position}")
@@ -27,13 +35,15 @@ public class NodeController {
 		@PathVariable Integer position,
 		@RequestBody AddNodeRequest request
 	) {
-		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+		nodeService.addNode(position, request);
+		return ResponseEntity.ok("Success!");
 	}
 
 	@DeleteMapping("/{position}")
 	public ResponseEntity<String> delete(
 		@PathVariable Integer position
 	) {
-		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+		nodeService.deleteNode(position);
+		return ResponseEntity.ok("Success!");
 	}
 }
