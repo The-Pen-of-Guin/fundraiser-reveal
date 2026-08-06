@@ -1,20 +1,15 @@
 package com.fundraiser.bridge.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fundraiser.bridge.controllers.node.AddNodeRequest;
-
 public class AnimationServiceImpl implements AnimationService {
 	@Override
-	public void appendNode(AddNodeRequest request) {
+	public void playAnimation() {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'appendNode'");
+		throw new UnsupportedOperationException("Unimplemented method 'playAnimation'");
 	}
 
 	@Override
-	public void addNode(Integer position, AddNodeRequest request) {
+	public void saveAnimation() {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addNode'");
+		throw new UnsupportedOperationException("Unimplemented method 'saveAnimation'");
 	}
 }
