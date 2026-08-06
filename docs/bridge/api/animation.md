@@ -11,3 +11,19 @@ Plays the animation in a generated window.
 been added.
 
 `GET /api/v1/animation/play`
+
+## Save Animation
+
+Saves the animation to a video file.
+
+Only MP4 will be supported for now.
+
+`POST /api/v1/animation/save`
+
+Request Body:
+```java
+{
+    "filename": "string",
+    "filetype": "string"
+}
+```

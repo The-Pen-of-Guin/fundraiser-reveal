@@ -19,7 +19,7 @@ public class NodeController {
 	public ResponseEntity<String> append(
 		@RequestBody AddNodeRequest request
 	) {
-		return ResponseEntity.ok("Hello Katie!");
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
 	}
 
 	@PostMapping("/add/{position}")
