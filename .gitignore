@@ -5,3 +5,6 @@
 build
 */build
 */bin
+
+.vscode
+.settings

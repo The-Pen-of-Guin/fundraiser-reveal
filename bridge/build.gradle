@@ -14,6 +14,7 @@ repositories {
 
 def joglVersion = '2.6.0'
 def mapstructVersion = '1.6.3'
+def springOpenApiVersion = '2.8.5'
 
 dependencies {
     // Use JUnit Jupiter for testing.
@@ -25,6 +26,7 @@ dependencies {
     implementation libs.guava
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springOpenApiVersion"
 
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
