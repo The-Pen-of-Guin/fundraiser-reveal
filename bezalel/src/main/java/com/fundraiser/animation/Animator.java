@@ -1,5 +1,6 @@
 package com.fundraiser.animation;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -17,24 +18,59 @@ public class Animator {
 
 	private float[] bgColor = {1.0f, 0.55f, 0.0f};
 	private float[] textColor = {0.5f, 0.0f, 0.5f};
+	private Path fontPath;
 
 	private Queue<AnimationNode> animationNodes = new ArrayDeque<>();
 
 	private AnimationEngine animationEngine = new AnimationEngine();
 
-	public void setAnimationNodes(Queue<AnimationNode> animationNodes) {
-		this.animationNodes = animationNodes;
-	}
-
 	public void run() {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
+		animationEngine.setFontPath(fontPath);
 
 		new Thread(() -> {
 			animationEngine.run();
 		}).start();
 
 		processAnimationNodes(animationNodes);
+	}
+
+	public void setAnimationNodes(Queue<AnimationNode> animationNodes) {
+		this.animationNodes = animationNodes;
+	}
+
+	public void setBackgroundColor(float r, float g, float b) {
+		try {
+			colorCheck(r, g, b);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to set background color: " + e);
+		}
+
+		bgColor = new float[] {r, g, b};
+	}
+
+	public void setTextColor(float r, float g, float b) {
+		try {
+			colorCheck(r, g, b);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to set text color: " + e);
+		}
+
+		textColor = new float[] {r, g, b};
+	}
+
+	public void setTextFont(Path textFontPath) {
+		fontPath = textFontPath;
+	}
+
+	private void colorCheck(float r, float g, float b) {
+		if (r < 0 | r > 1.0)
+			throw new IllegalArgumentException("r must be in range 0.0 to 1.0 inclusive");
+		if (g < 0 | g > 1.0)
+			throw new IllegalArgumentException("r must be in range 0.0 to 1.0 inclusive");
+		if (b < 0 | b > 1.0)
+			throw new IllegalArgumentException("r must be in range 0.0 to 1.0 inclusive");
 	}
 
 	private void processAnimationNodes(Queue<AnimationNode> animationNodes) {

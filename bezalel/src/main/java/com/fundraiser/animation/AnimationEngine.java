@@ -8,6 +8,7 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import java.nio.*;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -26,11 +27,13 @@ public class AnimationEngine {
 	private AtomicReference<String> text = new AtomicReference<>("$0");
 	private float[] bgColor = {1.0f, 0.55f, 0.0f};
 	private float[] textColor = {0.5f, 0.0f, 0.5f};
+	private Path fontPath;
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }
 	public void setBgColor(float r, float g, float b) { this.bgColor = new float[]{r, g, b}; }
 	public void setTextColor(float r, float g, float b) { this.textColor = new float[]{r, g, b}; }
+	public void setFontPath(Path fontPath) { this.fontPath = fontPath; }
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -105,7 +108,7 @@ public class AnimationEngine {
 		if (vg == 0) throw new RuntimeException("Failed to create NanoVG context");
 
 		// Load a system font
-		int font = NanoVG.nvgCreateFont(vg, "roboto", "/home/idenard/Projects/decaturbaptist/resources/fonts/static/Roboto-Regular.ttf");
+		int font = NanoVG.nvgCreateFont(vg, "font", fontPath.toAbsolutePath().toString());
 		if (font == -1) System.err.println("Font failed to load - check the path");
 	}
 
@@ -130,7 +133,7 @@ public class AnimationEngine {
 			nvgBeginFrame(vg, width, height, 1f);
 
 			NanoVG.nvgFontSize(vg, 48);
-			NanoVG.nvgFontFace(vg, "roboto");
+			NanoVG.nvgFontFace(vg, "font");
 			NanoVG.nvgTextAlign(vg, NanoVG.NVG_ALIGN_CENTER | NanoVG.NVG_ALIGN_MIDDLE);
 
 			try (MemoryStack stack = MemoryStack.stackPush()) {
