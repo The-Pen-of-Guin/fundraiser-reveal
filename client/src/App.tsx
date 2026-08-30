@@ -1,28 +1,30 @@
 import { useState } from "react";
 
-type NodeType = "input" | "process" | "output";
+type NodeType = "Set" | "Scramble" | "Countup";
 
 interface NodeSettings {
-  value?: string;
-  threshold?: number;
-  format?: string;
+  targetAmountCents?: number;
+  startDelayMs?: number;
+  durationMs?: number;
 }
 
 interface Node {
   id: string;
-  name: string;
   type: NodeType;
   settings: NodeSettings;
 }
 
 const defaultSettings = (type: NodeType): NodeSettings => {
+  var targetAmount = 0;
+  var startDelay = 0;
+  var duration = 0;
   switch (type) {
-    case "input":
-      return { value: "" };
-    case "process":
-      return { threshold: 0 };
-    case "output":
-      return { format: "json" };
+    case "Set":
+      return { targetAmountCents: targetAmount, startDelayMs: startDelay };
+    case "Scramble":
+      return { targetAmountCents: targetAmount, startDelayMs: startDelay, durationMs: duration };
+    case "Countup":
+      return { targetAmountCents: targetAmount, startDelayMs: startDelay, durationMs: duration };
   }
 };
 
@@ -33,7 +35,7 @@ export default function App() {
     const id = crypto.randomUUID();
     setNodes((prev) => [
       ...prev,
-      { id, name: `Node ${prev.length + 1}`, type: "input", settings: defaultSettings("input") },
+      { id, name: `Node ${prev.length + 1}`, type: "Set", settings: defaultSettings("Set") },
     ]);
   };
 
@@ -57,7 +59,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-3xl mx-auto">
+      <div className="min-w-fit mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-800">Animation Nodes</h1>
           <button
@@ -72,58 +74,119 @@ export default function App() {
           {nodes.map((node) => (
             <div
               key={node.id}
-              className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm"
+              className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm w-full"
             >
-              <input
-                value={node.name}
-                onChange={(e) => updateNode(node.id, { name: e.target.value })}
-                className="w-32 border border-gray-300 rounded px-2 py-1 text-sm"
-              />
-
-              <select
-                value={node.type}
-                onChange={(e) => changeType(node.id, e.target.value as NodeType)}
-                className="border border-gray-300 rounded px-2 py-1 text-sm"
-              >
-                <option value="input">Input</option>
-                <option value="process">Process</option>
-                <option value="output">Output</option>
-              </select>
-
-              {node.type === "input" && (
-                <input
-                  placeholder="value"
-                  value={node.settings.value ?? ""}
-                  onChange={(e) => updateSettings(node.id, { value: e.target.value })}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-              )}
-
-              {node.type === "process" && (
-                <input
-                  type="number"
-                  placeholder="threshold"
-                  value={node.settings.threshold ?? 0}
-                  onChange={(e) => updateSettings(node.id, { threshold: Number(e.target.value) })}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-              )}
-
-              {node.type === "output" && (
+              <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                <label>Node Type</label>
                 <select
-                  value={node.settings.format}
-                  onChange={(e) => updateSettings(node.id, { format: e.target.value })}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                  value={node.type}
+                  onChange={(e) => changeType(node.id, e.target.value as NodeType)}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
                 >
-                  <option value="json">JSON</option>
-                  <option value="csv">CSV</option>
-                  <option value="text">Text</option>
+                  <option value="Set">Set</option>
+                  <option value="Scramble">Scramble</option>
+                  <option value="Countup">Countup</option>
                 </select>
+              </div>
+
+              {node.type === "Set" && (
+                <>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Target Amount (cents)</label>
+                    <input
+                      type="number"
+                      placeholder="targetAmountCents"
+                      value={node.settings.targetAmountCents ?? 0}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Start Delay (ms)</label>
+                    <input
+                      type="number"
+                      placeholder="startDelayMs"
+                      value={node.settings.startDelayMs ?? 0}
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                </>
+              )}
+
+              {node.type === "Scramble" && (
+                <>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Target Amount (cents)</label>
+                    <input
+                      type="number"
+                      placeholder="targetAmountCents"
+                      value={node.settings.targetAmountCents ?? 0}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Start Delay (ms)</label>
+                    <input
+                      type="number"
+                      placeholder="startDelayMs"
+                      value={node.settings.startDelayMs ?? 0}
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Duration (ms)</label>
+                    <input
+                      type="number"
+                      placeholder="durationMs"
+                      value={node.settings.durationMs?? 0}
+                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                </>
+              )}
+
+              {node.type === "Countup" && (
+                <>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Target Amount (cents)</label>
+                    <input
+                      type="number"
+                      placeholder="targetAmountCents"
+                      value={node.settings.targetAmountCents ?? 0}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Start Delay (ms)</label>
+                    <input
+                      type="number"
+                      placeholder="startDelayMs"
+                      value={node.settings.startDelayMs ?? 0}
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
+                    <label>Duration (ms)</label>
+                    <input
+                      type="number"
+                      placeholder="durationMs"
+                      value={node.settings.durationMs?? 0}
+                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) })}
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+                </>
               )}
 
               <button
                 onClick={() => removeNode(node.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
+                className="ml-auto mr-4 text-red-500 hover:text-red-700 text-sm"
               >
                 Remove
               </button>
