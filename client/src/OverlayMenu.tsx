@@ -20,16 +20,30 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
       onClick={onClose} // click outside menu closes it
     >
       <div
-        style={{ background: "white", padding: "2rem", borderRadius: "8px" }}
+        style={{
+	  background: "white",
+	  padding: "2rem",
+	  borderRadius: "8px",
+	  width: "80%",
+	  maxWidth: "900px",
+	  height: "80%",
+	  overflowY: "auto",
+	  display: "flex",
+	  flexDirection: "column",
+	}}
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >
-        <h2>Menu</h2>
+        <h1 className="text-xl font-semibold text-gray-800">Settings Menu</h1>
         <ul>
           <li>Option 1</li>
           <li>Option 2</li>
           <li>Option 3</li>
         </ul>
-        <button onClick={onClose}>Close</button>
+	<div style={{ textAlign: "center", marginTop: "auto" }}>
+          <button onClick={onClose}
+	    className="px-4 py-1.5 bg-blue-600 text-white rounded-md text-l hover:bg-blue-700"
+	  >Close</button>
+	</div>
       </div>
     </div>
   );
