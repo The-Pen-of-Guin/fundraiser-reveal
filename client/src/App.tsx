@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SettingsButton } from "./SettingsButton";
+import { OverlayMenu } from "./OverlayMenu";
 
 type NodeType = "Set" | "Scramble" | "Countup";
 
@@ -28,8 +30,13 @@ const defaultSettings = (type: NodeType): NodeSettings => {
   }
 };
 
+async function generate() {
+  await fetch("http://localhost:8080/api/v1/animation/play")
+}
+
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const addNode = () => {
     const id = crypto.randomUUID();
@@ -60,8 +67,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="min-w-fit mx-auto">
+        {isSettingsOpen && <OverlayMenu onClose={() => setIsSettingsOpen(false)} />}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-800">Animation Nodes</h1>
+          <SettingsButton
+            className="ml-auto mr-4"
+            onClick={() => setIsSettingsOpen(true)}
+          />
           <button
             onClick={addNode}
             className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
@@ -199,6 +211,7 @@ export default function App() {
         </div>
         <div className="flex justify-end">
           <button
+            onClick={() => generate()}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
           >Generate</button>
         </div>
