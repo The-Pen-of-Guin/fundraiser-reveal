@@ -6,6 +6,7 @@ type OverlayMenuProps = {
 
 export function OverlayMenu({ onClose }: OverlayMenuProps) {
   const [backgroundColor, setBackgroundColor] = useState({ r: 255, g: 255, b:255 });
+  const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
 
   const rgbToHex = (r: number, g: number, b: number) =>
     "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("");
@@ -47,11 +48,19 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >
         <h1 className="text-xl font-semibold text-gray-800">Settings Menu</h1>
-	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem" }}>
+	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
 	  <label className="font-semibold text-gray-800">Background Color</label>
 	  <input
 	    type="color"
 	    value={rgbToHex(backgroundColor.r, backgroundColor.g, backgroundColor.b)}
+	    onChange={(e) => setBackgroundColor(hexToRgb(e.target.value))}
+	  />
+	</div>
+	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
+	  <label className="font-semibold text-gray-800">Text Color</label>
+	  <input
+	    type="color"
+	    value={rgbToHex(textColor.r, textColor.g, textColor.b)}
 	    onChange={(e) => setBackgroundColor(hexToRgb(e.target.value))}
 	  />
 	</div>
