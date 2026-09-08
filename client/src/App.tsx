@@ -38,6 +38,11 @@ export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  const [backgroundColor, setBackgroundColor] = useState({ r: 255, g: 255, b:255 });
+  const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
+
+  const [font, setFont] = useState("Arial");
+
   const addNode = () => {
     const id = crypto.randomUUID();
     setNodes((prev) => [
@@ -67,7 +72,15 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="min-w-fit mx-auto">
-        {isSettingsOpen && <OverlayMenu onClose={() => setIsSettingsOpen(false)} />}
+        {isSettingsOpen && <OverlayMenu 
+          backgroundColor={backgroundColor}
+          textColor={textColor}
+          font={font}
+          onBackgroundColorChange={(c) => setBackgroundColor(c)}
+          onTextColorChange={(c) => setTextColor(c)}
+          onFontChange={(f) => setFont(f)}
+          onClose={() => setIsSettingsOpen(false)}
+        />}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-800">Animation Nodes</h1>
           <SettingsButton

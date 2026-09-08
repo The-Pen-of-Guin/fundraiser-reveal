@@ -1,15 +1,22 @@
-import { useState } from "react";
-
 type OverlayMenuProps = {
+  backgroundColor: { r: number; g: number; b: number };
+  onBackgroundColorChange: (color: { r: number, g: number, b: number }) => void;
+  textColor: { r: number; g: number; b: number };
+  onTextColorChange: (color: { r: number, g: number, b: number }) => void;
+  font: string;
+  onFontChange: (font: string) => void;
   onClose: () => void;
 };
 
-export function OverlayMenu({ onClose }: OverlayMenuProps) {
-  const [backgroundColor, setBackgroundColor] = useState({ r: 255, g: 255, b:255 });
-  const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
-
-  const [font, setFont] = useState("Arial");
-
+export function OverlayMenu({
+  backgroundColor,
+  onBackgroundColorChange,
+  textColor,
+  onTextColorChange,
+  font,
+  onFontChange,
+  onClose
+}: OverlayMenuProps) {
   const fontOptions = [
     "Arial",
     "Roboto",
@@ -61,7 +68,8 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
 	  <input
 	    type="color"
 	    value={rgbToHex(backgroundColor.r, backgroundColor.g, backgroundColor.b)}
-	    onChange={(e) => setBackgroundColor(hexToRgb(e.target.value))}
+	    onChange={(e) =>
+	      onBackgroundColorChange(hexToRgb(e.target.value))}
 	  />
 	</div>
 	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
@@ -69,12 +77,12 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
 	  <input
 	    type="color"
 	    value={rgbToHex(textColor.r, textColor.g, textColor.b)}
-	    onChange={(e) => setTextColor(hexToRgb(e.target.value))}
+	    onChange={(e) => onTextColorChange(hexToRgb(e.target.value))}
 	  />
 	</div>
 	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
 	  <label className="font-semibold text-gray-800">Text Font</label>
-	  <select value={font} onChange={(e) => setFont(e.target.value)}>
+	  <select value={font} onChange={(e) => onFontChange(e.target.value)}>
 	    {fontOptions.map((f) => (
 	      <option key={f} value={f} style={{ fontFamily: f }}>
 	        {f}
