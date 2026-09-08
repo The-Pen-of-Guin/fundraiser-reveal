@@ -8,6 +8,14 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
   const [backgroundColor, setBackgroundColor] = useState({ r: 255, g: 255, b:255 });
   const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
 
+  const [font, setFont] = useState("Arial");
+
+  const fontOptions = [
+    "Arial",
+    "Roboto",
+    "Times New Roman",
+  ];
+
   const rgbToHex = (r: number, g: number, b: number) =>
     "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("");
 
@@ -61,8 +69,18 @@ export function OverlayMenu({ onClose }: OverlayMenuProps) {
 	  <input
 	    type="color"
 	    value={rgbToHex(textColor.r, textColor.g, textColor.b)}
-	    onChange={(e) => setBackgroundColor(hexToRgb(e.target.value))}
+	    onChange={(e) => setTextColor(hexToRgb(e.target.value))}
 	  />
+	</div>
+	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
+	  <label className="font-semibold text-gray-800">Text Font</label>
+	  <select value={font} onChange={(e) => setFont(e.target.value)}>
+	    {fontOptions.map((f) => (
+	      <option key={f} value={f} style={{ fontFamily: f }}>
+	        {f}
+	      </option>
+	    ))}
+	  </select>
 	</div>
 	<div style={{ textAlign: "center", marginTop: "auto" }}>
           <button onClick={onClose}
