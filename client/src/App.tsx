@@ -34,6 +34,27 @@ async function generate() {
   await fetch("http://localhost:8080/api/v1/animation/play")
 }
 
+interface SetBackgroundColorRequest {
+  r: number,
+  g: number,
+  b: number,
+}
+
+async function postBackgroundColor(payload: SetBackgroundColorRequest) {
+  const response = await fetch("http://localhost:8080/api/v1/scene/background/color", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
+}
+
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -76,7 +97,10 @@ export default function App() {
           backgroundColor={backgroundColor}
           textColor={textColor}
           font={font}
-          onBackgroundColorChange={(c) => setBackgroundColor(c)}
+          onBackgroundColorChange={(c) => {
+            setBackgroundColor(c);
+            postBackgroundColor(c);
+          }}
           onTextColorChange={(c) => setTextColor(c)}
           onFontChange={(f) => setFont(f)}
           onClose={() => setIsSettingsOpen(false)}
