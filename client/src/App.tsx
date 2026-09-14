@@ -55,6 +55,27 @@ async function postBackgroundColor(payload: SetBackgroundColorRequest) {
   }
 }
 
+interface SetTextColorRequest {
+  r: number,
+  g: number,
+  b: number,
+}
+
+async function postTextColor(payload: SetTextColorRequest) {
+  const response = await fetch("http://localhost:8080/api/v1/scene/text/color", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
+}
+
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -101,7 +122,10 @@ export default function App() {
             setBackgroundColor(c);
             postBackgroundColor(c);
           }}
-          onTextColorChange={(c) => setTextColor(c)}
+          onTextColorChange={(c) => {
+            setTextColor(c);
+            postTextColor(c);
+          }}
           onFontChange={(f) => setFont(f)}
           onClose={() => setIsSettingsOpen(false)}
         />}
