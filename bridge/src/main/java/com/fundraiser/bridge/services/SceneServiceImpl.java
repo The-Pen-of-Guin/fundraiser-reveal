@@ -38,7 +38,7 @@ public class SceneServiceImpl implements SceneService {
 
 	@Override
 	public void setTextFont(SetTextFontRequest request) {
-		fontPath = Path.of(request.fontPath());
+		fontPath = Path.of(request.font());
 	}
 
 	@Override

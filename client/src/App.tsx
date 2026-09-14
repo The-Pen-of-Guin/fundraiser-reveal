@@ -76,6 +76,25 @@ async function postTextColor(payload: SetTextColorRequest) {
   }
 }
 
+interface SetFontRequest {
+  font: string,
+}
+
+async function postFont(payload: SetFontRequest) {
+  const response = await fetch("http://localhost:8080/api/v1/scene/text/font", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
+}
+
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -126,7 +145,10 @@ export default function App() {
             setTextColor(c);
             postTextColor(c);
           }}
-          onFontChange={(f) => setFont(f)}
+          onFontChange={(f) => {
+            setFont(f);
+            postFont(f);
+          }}
           onClose={() => setIsSettingsOpen(false)}
         />}
         <div className="flex items-center justify-between mb-4">
