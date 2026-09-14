@@ -76,14 +76,18 @@ async function postTextColor(payload: SetTextColorRequest) {
   }
 }
 
-async function postFont(font: string) {
+interface SetFontRequest {
+  font: string,
+}
+
+async function postFont(payload: SetFontRequest) {
   const response = await fetch("http://localhost:8080/api/v1/scene/text/font", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify(font),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -143,7 +147,10 @@ export default function App() {
           }}
           onFontChange={(f) => {
             setFont(f);
-            postFont(f);
+            const request: SetFontRequest = {
+              font: f,
+            };
+            postFont(request);
           }}
           onClose={() => setIsSettingsOpen(false)}
         />}

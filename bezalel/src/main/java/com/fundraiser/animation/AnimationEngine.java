@@ -7,8 +7,8 @@ import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
+import java.io.IOException;
 import java.nio.*;
-import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -107,10 +107,10 @@ public class AnimationEngine {
 		vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 		if (vg == 0) throw new RuntimeException("Failed to create NanoVG context");
 
-		String fontPath = getFontPath(font);
+		ByteBuffer fontData = getFontPath(font);
 
 		// Load a system font
-		int loadedFont = NanoVG.nvgCreateFont(vg, "font", fontPath);
+		int loadedFont = NanoVG.nvgCreateFontMem(vg, "font", fontData, false);
 		if (loadedFont == -1) System.err.println("Font failed to load - check the path");
 	}
 
@@ -168,11 +168,23 @@ public class AnimationEngine {
 		glfwSetErrorCallback(null).free();
 	}
 
-	private String getFontPath(String font) {
+	private ByteBuffer getFontPath(String font) {
 		String path = switch (font) {
-			case "Arial" -> "";
+			case "Roboto" -> "/fonts/Roboto-Regular.ttf";
 			default -> throw new IllegalArgumentException(String.format("Font type %s not supported!"));
 		};
-		return path;
+
+		byte[] bytes;
+		try {
+			bytes = getClass().getResourceAsStream(path).readAllBytes();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to read font resource: ", e);
+		}
+
+		ByteBuffer buffer = MemoryUtil.memAlloc(bytes.length);
+		buffer.put(bytes);
+		buffer.flip();
+		
+		return buffer;
 	}
 }
