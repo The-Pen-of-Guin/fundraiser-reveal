@@ -27,13 +27,13 @@ public class AnimationEngine {
 	private AtomicReference<String> text = new AtomicReference<>("$0");
 	private float[] bgColor = {1.0f, 0.55f, 0.0f};
 	private float[] textColor = {0.5f, 0.0f, 0.5f};
-	private Path fontPath;
+	private String font;
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }
 	public void setBgColor(float r, float g, float b) { this.bgColor = new float[]{r, g, b}; }
 	public void setTextColor(float r, float g, float b) { this.textColor = new float[]{r, g, b}; }
-	public void setFontPath(Path fontPath) { this.fontPath = fontPath; }
+	public void setFont(String font) { this.font = font; }
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -107,9 +107,11 @@ public class AnimationEngine {
 		vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 		if (vg == 0) throw new RuntimeException("Failed to create NanoVG context");
 
+		String fontPath = getFontPath(font);
+
 		// Load a system font
-		int font = NanoVG.nvgCreateFont(vg, "font", fontPath.toAbsolutePath().toString());
-		if (font == -1) System.err.println("Font failed to load - check the path");
+		int loadedFont = NanoVG.nvgCreateFont(vg, "font", fontPath);
+		if (loadedFont == -1) System.err.println("Font failed to load - check the path");
 	}
 
 	private void loop() {
@@ -164,5 +166,13 @@ public class AnimationEngine {
 		// Terminate GLFW and free the error callback
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
+	}
+
+	private String getFontPath(String font) {
+		String path = switch (font) {
+			case "Arial" -> "";
+			default -> throw new IllegalArgumentException(String.format("Font type %s not supported!"));
+		};
+		return path;
 	}
 }

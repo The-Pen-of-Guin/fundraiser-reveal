@@ -1,6 +1,5 @@
 package com.fundraiser.bridge.services;
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import com.fundraiser.bridge.models.scene.Color;
 public class SceneServiceImpl implements SceneService {
 	private Color backgroundColor;
 	private Color textColor;
-	private Path fontPath;
+	private String fontName;
 
 	@Override
 	public void setBackgroundColor(SetBackgroundColorRequest request) {
@@ -38,11 +37,11 @@ public class SceneServiceImpl implements SceneService {
 
 	@Override
 	public void setTextFont(SetTextFontRequest request) {
-		fontPath = Path.of(request.font());
+		fontName = request.font();
 	}
 
 	@Override
-	public Optional<Path> getTextFont() {
-		return Optional.ofNullable(fontPath);
+	public Optional<String> getTextFont() {
+		return Optional.ofNullable(fontName);
 	}
 }

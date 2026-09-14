@@ -76,18 +76,14 @@ async function postTextColor(payload: SetTextColorRequest) {
   }
 }
 
-interface SetFontRequest {
-  font: string,
-}
-
-async function postFont(payload: SetFontRequest) {
+async function postFont(font: string) {
   const response = await fetch("http://localhost:8080/api/v1/scene/text/font", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(font),
   });
 
   if (!response.ok) {

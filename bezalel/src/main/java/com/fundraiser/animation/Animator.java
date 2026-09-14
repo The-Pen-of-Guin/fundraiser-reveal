@@ -1,6 +1,5 @@
 package com.fundraiser.animation;
 
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -18,7 +17,7 @@ public class Animator {
 
 	private float[] bgColor = {1.0f, 0.55f, 0.0f};
 	private float[] textColor = {0.5f, 0.0f, 0.5f};
-	private Path fontPath;
+	private String font;
 
 	private Queue<AnimationNode> animationNodes = new ArrayDeque<>();
 
@@ -27,7 +26,7 @@ public class Animator {
 	public void run() {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
-		animationEngine.setFontPath(fontPath);
+		animationEngine.setFont(font);
 
 		new Thread(() -> {
 			animationEngine.run();
@@ -60,8 +59,8 @@ public class Animator {
 		textColor = new float[] {r, g, b};
 	}
 
-	public void setTextFont(Path textFontPath) {
-		fontPath = textFontPath;
+	public void setTextFont(String textFontPath) {
+		font = textFontPath;
 	}
 
 	private void colorCheck(float r, float g, float b) {

@@ -19,5 +19,5 @@ public interface SceneService {
 
 	Optional<Color> getTextColor();
 
-	Optional<Path> getTextFont();
+	Optional<String> getTextFont();
 }
