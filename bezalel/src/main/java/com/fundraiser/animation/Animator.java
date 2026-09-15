@@ -15,9 +15,9 @@ import com.fundraiser.animation.nodes.SetAnimation;
 public class Animator {
 	private int currentAmountCents = 0;
 
-	private float[] bgColor = {1.0f, 0.55f, 0.0f};
-	private float[] textColor = {0.5f, 0.0f, 0.5f};
-	private String font;
+	private float[] bgColor = {0.0f, 0.0f, 0.0f};
+	private float[] textColor = {1.0f, 1.0f, 1.0f};
+	private String font = "Roboto";
 
 	private Queue<AnimationNode> animationNodes = new ArrayDeque<>();
 

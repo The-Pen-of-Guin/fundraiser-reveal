@@ -30,8 +30,48 @@ const defaultSettings = (type: NodeType): NodeSettings => {
   }
 };
 
-async function generate() {
+async function generate(nodes: Node[]) {
+  nodes.forEach( (node) => {
+    const animation: AnimationRequest = {
+      animationType: node.type,
+      startDelayMs: node.settings.startDelayMs ?? 0,
+      durationMs: node.settings.durationMs ?? 0,
+      additionalProperties: [],
+    };
+    const request: AppendNodeRequest = {
+      targetAmountCents: node.settings.targetAmountCents ?? 0,
+      animation: animation,
+    };
+    postAppendNode(request);
+  });
   await fetch("http://localhost:8080/api/v1/animation/play")
+}
+
+interface AnimationRequest {
+  animationType: string,
+  startDelayMs: number,
+  durationMs: number,
+  additionalProperties: string[],
+}
+
+interface AppendNodeRequest {
+  targetAmountCents: number,
+  animation: AnimationRequest,
+}
+
+async function postAppendNode(payload: AppendNodeRequest) {
+  const response = await fetch("http://localhost:8080/api/v1/node/append", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
 }
 
 interface SetBackgroundColorRequest {
@@ -297,7 +337,7 @@ export default function App() {
         </div>
         <div className="flex justify-end">
           <button
-            onClick={() => generate()}
+            onClick={() => generate(nodes)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
           >Generate</button>
         </div>

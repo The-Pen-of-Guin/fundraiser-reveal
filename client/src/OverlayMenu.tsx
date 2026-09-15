@@ -18,9 +18,7 @@ export function OverlayMenu({
   onClose
 }: OverlayMenuProps) {
   const fontOptions = [
-    "Arial",
     "Roboto",
-    "Times New Roman",
   ];
 
   const rgbToHex = (r: number, g: number, b: number) =>
