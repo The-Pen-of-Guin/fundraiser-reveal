@@ -28,6 +28,8 @@ public class Animator {
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
 		animationEngine.setFont(font);
 
+		currentAmountCents = 0;
+
 		new Thread(() -> {
 			animationEngine.run();
 		}).start();

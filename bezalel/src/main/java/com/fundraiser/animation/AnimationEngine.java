@@ -25,9 +25,9 @@ public class AnimationEngine {
 	private long vg;
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
-	private float[] bgColor = {1.0f, 0.55f, 0.0f};
-	private float[] textColor = {0.5f, 0.0f, 0.5f};
-	private String font;
+	private float[] bgColor = {0.0f, 0.0f, 0.0f};
+	private float[] textColor = {1.0f, 1.0f, 1.0f};
+	private String font = "Roboto";
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }

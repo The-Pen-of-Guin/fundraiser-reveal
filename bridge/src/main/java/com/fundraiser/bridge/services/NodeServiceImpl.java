@@ -36,6 +36,11 @@ public class NodeServiceImpl implements NodeService {
 
 	@Override
 	public List<AnimationNode> getNodes() {
-		return nodes;
+		return new ArrayList<>(nodes);
+	}
+
+	@Override
+	public void clearNodes() {
+		nodes.clear();
 	}
 }

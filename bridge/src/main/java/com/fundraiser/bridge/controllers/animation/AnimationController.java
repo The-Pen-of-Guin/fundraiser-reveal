@@ -1,6 +1,7 @@
 package com.fundraiser.bridge.controllers.animation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,12 @@ public class AnimationController {
 		@RequestBody SaveAnimationRequest request
 	) {
 		animationService.saveAnimation();
+		return ResponseEntity.ok("Success!");
+	}
+
+	@DeleteMapping("/clear")
+	public ResponseEntity<String> clear(){
+		animationService.clearAnimation();
 		return ResponseEntity.ok("Success!");
 	}
 }

@@ -33,6 +33,11 @@ public class AnimationServiceImpl implements AnimationService {
 		throw new UnsupportedOperationException("Unimplemented method 'saveAnimation'");
 	}
 
+	@Override
+	public void clearAnimation() {
+		nodeService.clearNodes();
+	}
+
 	private void setupAnimation() {
 		var nodes = nodeService.getNodes();
 		animator.setAnimationNodes(new ArrayDeque<>(nodes));

@@ -11,9 +11,9 @@ import com.fundraiser.bridge.models.scene.Color;
 
 @Service
 public class SceneServiceImpl implements SceneService {
-	private Color backgroundColor;
-	private Color textColor;
-	private String fontName;
+	private Color backgroundColor = new Color((short)0, (short)0, (short)0);
+	private Color textColor = new Color((short)255, (short)255, (short)255);
+	private String fontName = "Roboto";
 
 	@Override
 	public void setBackgroundColor(SetBackgroundColorRequest request) {

@@ -31,7 +31,13 @@ const defaultSettings = (type: NodeType): NodeSettings => {
 };
 
 async function generate(nodes: Node[]) {
-  nodes.forEach( (node) => {
+  await clear();
+  await sendNodes(nodes);
+  await fetch("http://localhost:8080/api/v1/animation/play")
+}
+
+async function sendNodes(nodes: Node[]) {
+  for (const node of nodes) {
     const animation: AnimationRequest = {
       animationType: node.type,
       startDelayMs: node.settings.startDelayMs ?? 0,
@@ -42,9 +48,18 @@ async function generate(nodes: Node[]) {
       targetAmountCents: node.settings.targetAmountCents ?? 0,
       animation: animation,
     };
-    postAppendNode(request);
+    await postAppendNode(request);
+  };
+}
+
+async function clear() {
+  const response = await fetch("http://localhost:8080/api/v1/animation/clear", {
+    method: 'DELETE',
   });
-  await fetch("http://localhost:8080/api/v1/animation/play")
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
 }
 
 interface AnimationRequest {
@@ -337,7 +352,7 @@ export default function App() {
         </div>
         <div className="flex justify-end">
           <button
-            onClick={() => generate(nodes)}
+            onClick={async () => await generate(nodes)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
           >Generate</button>
         </div>

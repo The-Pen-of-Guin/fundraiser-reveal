@@ -1,6 +1,5 @@
 package com.fundraiser.bridge.services;
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 import com.fundraiser.bridge.controllers.scene.SetBackgroundColorRequest;
