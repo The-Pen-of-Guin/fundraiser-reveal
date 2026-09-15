@@ -28,7 +28,9 @@ public class Animator {
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
 		animationEngine.setFont(font);
 
+		// Reset amount when starting. This resets previous runs.
 		currentAmountCents = 0;
+		animationEngine.setText(centsToStringDollars(currentAmountCents));
 
 		new Thread(() -> {
 			animationEngine.run();

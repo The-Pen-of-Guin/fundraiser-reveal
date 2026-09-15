@@ -6,7 +6,7 @@ import com.fundraiser.animation.nodes.AnimationNode;
 import com.fundraiser.bridge.controllers.node.AddNodeRequest;
 
 public interface NodeService {
-	int appendNode(AddNodeRequest request);
+	void appendNode(AddNodeRequest request);
 
 	void addNode(Integer position, AddNodeRequest request);
 
