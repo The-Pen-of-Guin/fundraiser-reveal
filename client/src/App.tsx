@@ -30,10 +30,29 @@ const defaultSettings = (type: NodeType): NodeSettings => {
   }
 };
 
-async function generate(nodes: Node[]) {
+async function play(nodes: Node[]) {
   await clear();
   await sendNodes(nodes);
   await fetch("http://localhost:8080/api/v1/animation/play")
+}
+
+interface SaveRequest {
+  filename: string,
+  filetype: string,
+}
+
+async function save(nodes: Node[]) {
+  await clear();
+  await sendNodes(nodes);
+  const request: SaveRequest = {filename: "output.mp4", filetype: "mp4"}; 
+  await fetch("http://localhost:8080/api/v1/animation/save", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(request),
+  })
 }
 
 async function sendNodes(nodes: Node[]) {
@@ -245,22 +264,20 @@ export default function App() {
               {node.type === "Set" && (
                 <>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Target Amount (cents)</label>
+                    <label>Target Amount (dollars)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="targetAmountCents"
-                      value={node.settings.targetAmountCents ?? 0}
-                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Start Delay (ms)</label>
+                    <label>Start Delay (seconds)</label>
                     <input
-                      type="number"
-                      placeholder="startDelayMs"
-                      value={node.settings.startDelayMs ?? 0}
-                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      type="string"
+                      placeholder="startDelaySecodns"
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
@@ -270,32 +287,29 @@ export default function App() {
               {node.type === "Scramble" && (
                 <>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Target Amount (cents)</label>
+                    <label>Target Amount (dollars)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="targetAmountCents"
-                      value={node.settings.targetAmountCents ?? 0}
-                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Start Delay (ms)</label>
+                    <label>Start Delay (seconds)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="startDelayMs"
-                      value={node.settings.startDelayMs ?? 0}
-                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Duration (ms)</label>
+                    <label>Duration (seconds)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="durationMs"
-                      value={node.settings.durationMs?? 0}
-                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
@@ -305,32 +319,29 @@ export default function App() {
               {node.type === "Countup" && (
                 <>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Target Amount (cents)</label>
+                    <label>Target Amount (dollars)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="targetAmountCents"
-                      value={node.settings.targetAmountCents ?? 0}
-                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Start Delay (ms)</label>
+                    <label>Start Delay (seconds)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="startDelayMs"
-                      value={node.settings.startDelayMs ?? 0}
-                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', marginBottom: '1rem'}}>
-                    <label>Duration (ms)</label>
+                    <label>Duration (seconds)</label>
                     <input
-                      type="number"
+                      type="string"
                       placeholder="durationMs"
-                      value={node.settings.durationMs?? 0}
-                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) })}
+                      onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
                   </div>
@@ -350,11 +361,16 @@ export default function App() {
             <p className="text-sm text-gray-400 text-center py-8">No nodes yet.</p>
           )}
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
           <button
-            onClick={async () => await generate(nodes)}
+            onClick={async () => await play(nodes)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
-          >Generate</button>
+          >Play</button>
+
+          <button
+            onClick={async () => await save(nodes)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+          >Save</button>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 package com.fundraiser.animation.nodes;
 
 public class ScrambleAnimation extends Animation {
-	private final static int TIME_BETWEEN_NUMBERS_MS = 35;
+	private final static int TIME_BETWEEN_NUMBERS_MS = 75;
 
 	public ScrambleAnimation(int startDelayMs, int durationMs) {
 		super(startDelayMs, durationMs);

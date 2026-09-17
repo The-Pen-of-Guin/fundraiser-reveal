@@ -1,5 +1,6 @@
 package com.fundraiser.animation;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -24,6 +25,10 @@ public class Animator {
 	private AnimationEngine animationEngine = new AnimationEngine();
 
 	public void run() {
+		run(null, 0, 0);
+	}
+
+	public void run(Path outputFile, int fps, int durationSeconds) {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
 		animationEngine.setFont(font);
@@ -33,7 +38,10 @@ public class Animator {
 		animationEngine.setText(centsToStringDollars(currentAmountCents));
 
 		new Thread(() -> {
-			animationEngine.run();
+			if (outputFile == null)
+				animationEngine.run();
+			else
+				animationEngine.run(outputFile, fps, durationSeconds);	
 		}).start();
 
 		processAnimationNodes(animationNodes);
@@ -121,7 +129,7 @@ public class Animator {
 				Thread.sleep(scrambleAnimation.getTimeBetweenNumbersMs());
 			} catch (InterruptedException ex) {
 			}
-			var randomNumber = ThreadLocalRandom.current().nextInt(0, 1000000);
+			var randomNumber = ThreadLocalRandom.current().nextInt((int) Math.pow(10, (int) Math.log10(targetAmountCents)), (int) Math.pow(10, (int) Math.log10(targetAmountCents) + 1) - 1);
 
 			// NOTE: Adjust formatting a little more
 			animationEngine.setText(String.format("%6s", centsToStringDollars(randomNumber)).replace(' ', '0'));

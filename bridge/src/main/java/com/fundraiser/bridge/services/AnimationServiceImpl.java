@@ -1,10 +1,12 @@
 package com.fundraiser.bridge.services;
 
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 
 import org.springframework.stereotype.Service;
 
 import com.fundraiser.animation.Animator;
+import com.fundraiser.animation.nodes.AnimationNode;
 
 @Service
 public class AnimationServiceImpl implements AnimationService {
@@ -29,8 +31,17 @@ public class AnimationServiceImpl implements AnimationService {
 
 	@Override
 	public void saveAnimation() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'saveAnimation'");
+		setupAnimation();
+
+		int durationMs = 0;
+		for (AnimationNode node : nodeService.getNodes()) {
+			durationMs = durationMs + node.animation().getDurationMs() + node.animation().getStartDelayMs();
+		}
+
+		final int durationSeconds = durationMs/1000;
+		new Thread(() -> {
+			animator.run(Path.of("./output.mp4"), 60, durationSeconds);
+		}).start();
 	}
 
 	@Override

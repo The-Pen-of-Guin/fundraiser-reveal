@@ -7,8 +7,11 @@ import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
+import com.fundraiser.utils.FFmpegEncoder;
+
 import java.io.IOException;
 import java.nio.*;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -28,6 +31,7 @@ public class AnimationEngine {
 	private float[] bgColor = {0.0f, 0.0f, 0.0f};
 	private float[] textColor = {1.0f, 1.0f, 1.0f};
 	private String font = "Roboto";
+	private int fontSize = 150;
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }
@@ -41,6 +45,18 @@ public class AnimationEngine {
 		init();
 		loop();
 		cleanup();
+	}
+
+	public void run(Path outputFile, int fps, int durationSeconds) {
+		System.out.println("Duration: " + durationSeconds + " seconds");
+		init();
+		try (var encoder = new FFmpegEncoder(outputFile, 1920, 1080, fps)) {
+			loop(encoder, fps, durationSeconds);
+		} catch (IOException e) {
+			throw new RuntimeException("Encoding Failed: ", e);
+		} finally {
+			cleanup();
+		}
 	}
 
 	private void init() {
@@ -58,7 +74,7 @@ public class AnimationEngine {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(800, 600, "GIC Reveal Generator", NULL, NULL);
+		window = glfwCreateWindow(1920, 1080, "GIC Reveal Generator", NULL, NULL);
 		if ( window == NULL )
 			throw new RuntimeException("Failed to create the GLFW window");
 
@@ -134,7 +150,7 @@ public class AnimationEngine {
 
 			nvgBeginFrame(vg, width, height, 1f);
 
-			NanoVG.nvgFontSize(vg, 48);
+			NanoVG.nvgFontSize(vg, fontSize);
 			NanoVG.nvgFontFace(vg, "font");
 			NanoVG.nvgTextAlign(vg, NanoVG.NVG_ALIGN_CENTER | NanoVG.NVG_ALIGN_MIDDLE);
 
@@ -154,6 +170,44 @@ public class AnimationEngine {
 			// invoked during this call.
 			glfwPollEvents();
 		}
+	}
+
+	private void loop(FFmpegEncoder encoder, int fps, int durationSeconds) throws IOException {
+        	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        	int totalFrames = fps * durationSeconds;
+        	ByteBuffer pixelBuffer = null;
+
+        	for (int frame = 0; frame < totalFrames && !glfwWindowShouldClose(window); frame++) {
+        	        IntBuffer w = BufferUtils.createIntBuffer(1);
+        	        IntBuffer h = BufferUtils.createIntBuffer(1);
+        	        glfwGetFramebufferSize(window, w, h);
+        	        int width = w.get(0), height = h.get(0);
+
+        	        if (pixelBuffer == null) pixelBuffer = BufferUtils.createByteBuffer(width * height * 4);
+
+        	        glViewport(0, 0, width, height);
+        	        glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
+        	        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        	        nvgBeginFrame(vg, width, height, 1f);
+        	        NanoVG.nvgFontSize(vg, fontSize);
+        	        NanoVG.nvgFontFace(vg, "font");
+        	        NanoVG.nvgTextAlign(vg, NanoVG.NVG_ALIGN_CENTER | NanoVG.NVG_ALIGN_MIDDLE);
+        	        try (MemoryStack stack = MemoryStack.stackPush()) {
+        	                NVGColor color = NVGColor.malloc(stack);
+        	                color.r(textColor[0]).g(textColor[1]).b(textColor[2]).a(1f);
+        	                NanoVG.nvgFillColor(vg, color);
+        	        }
+        	        NanoVG.nvgText(vg, width / 2f, height / 2f, getText());
+        	        nvgEndFrame(vg);
+
+        	        pixelBuffer.clear();
+        	        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
+        	        encoder.writeFrame(pixelBuffer);
+
+        	        glfwSwapBuffers(window);
+        	        glfwPollEvents();
+        	}
 	}
 
 	private void cleanup() {
