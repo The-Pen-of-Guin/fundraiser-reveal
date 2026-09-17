@@ -19,7 +19,11 @@ public class ConfettiSystem {
 	static final int MAX_PARTICLES = 500;
 	List<Particle> particles = new ArrayList<>();
 	int vao, quadVBO, instanceVBO, shaderProgram;
-	FloatBuffer instanceData = BufferUtils.createFloatBuffer(MAX_PARTICLES * 7);
+	FloatBuffer instanceData = BufferUtils.createFloatBuffer(MAX_PARTICLES * 8);
+
+	private final float BASE_LIFE = 20f;
+
+	private final float GRAVITY = 300f;
 
 	public void init() {
 		// Quad mesh (2 trianfles, unit size centered at origin)
@@ -37,12 +41,12 @@ public class ConfettiSystem {
 		glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
 		glEnableVertexAttribArray(0);
 
-		// Instance buffer: pos(2) + rot(1) + color(4) = 7 floats per particle
+		// Instance buffer: pos(2) + rot(1) + color(4) + size(1) = 8 floats per particle
 		instanceVBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-		glBufferData(GL_ARRAY_BUFFER, (long) MAX_PARTICLES * 7 * 4, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, (long) MAX_PARTICLES * 8 * 4, GL_DYNAMIC_DRAW);
 
-		int stride = 7 * 4;
+		int stride = 8 * 4;
 		glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, 0);   // x,y,rot
 		glEnableVertexAttribArray(1);
 		glVertexAttribDivisor(1, 1);
@@ -50,6 +54,10 @@ public class ConfettiSystem {
 		glVertexAttribPointer(2, 4, GL_FLOAT, false, stride, 3 * 4); // rgba
 		glEnableVertexAttribArray(2);
 		glVertexAttribDivisor(2, 1);
+
+		glVertexAttribPointer(3, 1, GL_FLOAT, false, stride, 7 * 4);
+		glEnableVertexAttribArray(3);
+		glVertexAttribDivisor(3, 1);
 
 		InputStream vertStream = getClass().getClassLoader().getResourceAsStream("shaders/confetti/confetti.vert");
 		InputStream fragStream = getClass().getClassLoader().getResourceAsStream("shaders/confetti/confetti.frag");
@@ -61,14 +69,15 @@ public class ConfettiSystem {
 		var rnd = new Random();
 		for (int i = 0; i < count && particles.size() < MAX_PARTICLES; i++) {
 			var p = new Particle();
+			p.setSize(10f);
 		  	p.setPosition(x, y);
-		  	float angle = (float)(rnd.nextDouble() * Math.PI - Math.PI/2); // upward cone
-		  	float speed = 200 + rnd.nextFloat() * 300;
+		  	float angle = (float)(rnd.nextDouble() * -Math.PI); // upward cone
+		  	float speed = 400 + rnd.nextFloat() * 300;
 		  	p.setVelocity((float)Math.cos(angle) * speed, (float)Math.sin(angle) * speed);
 		  	p.setRotation(rnd.nextFloat() * 360);
 		  	p.setAngularVelocity((rnd.nextFloat() - 0.5f) * 720);
 		  	p.setR(rnd.nextFloat()); p.setG(rnd.nextFloat()); p.setB(rnd.nextFloat());
-			var life = 10f + rnd.nextFloat();
+			var life = BASE_LIFE + rnd.nextFloat();
 		  	p.setMaxLife(life);
 			p.setLife(life);
 		  	particles.add(p);
@@ -79,13 +88,14 @@ public class ConfettiSystem {
     	    Iterator<Particle> it = particles.iterator();
     	    while (it.hasNext()) {
     	        Particle p = it.next();
-    	        p.setVelocity(p.getVelocity().x, p.getVelocity().y - 500f * dt);      // gravity
+    	        p.setVelocity(p.getVelocity().x, p.getVelocity().y + GRAVITY * dt);      // gravity
     	        p.setVelocity(p.getVelocity().mul(0.99f));          // drag
     	        p.setPosition(p.getPosition().add(p.getVelocity().x * dt, p.getVelocity().y * dt));
     	        p.setRotation(p.getRotation() + p.getAngularVelocity() * dt);
     	        p.setLife(p.getLife() - dt);
-    	        p.setA(Math.max(0, p.getLife() / p.getMaxLife())); // fade out
+    	        // p.setA(Math.max(0, p.getLife() / p.getMaxLife())); // fade out
     	        if (p.getLife() <= 0) it.remove();
+		System.out.println("x: " + p.getPosition().x + ", y: " + p.getPosition().y);
     	    }
     	}
 
@@ -93,7 +103,7 @@ public class ConfettiSystem {
     	    instanceData.clear();
     	    for (Particle p : particles) {
     	        instanceData.put(p.getPosition().x).put(p.getPosition().y).put((float)Math.toRadians(p.getRotation()));
-    	        instanceData.put(p.getR()).put(p.getG()).put(p.getB()).put(p.getA());
+    	        instanceData.put(p.getR()).put(p.getG()).put(p.getB()).put(p.getA()).put(p.getSize());
     	    }
     	    instanceData.flip();
 

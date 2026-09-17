@@ -141,7 +141,7 @@ public class AnimationEngine {
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		particleSystem.init();
-		particleSystem.spawn(960, 540, 150);
+		particleSystem.spawn(960, 540, 300);
 		var particleTime = Instant.now();
 
 		// Run the rendering loop until the user has attempted to close
@@ -160,6 +160,7 @@ public class AnimationEngine {
 
 			particleSystem.update((float)Duration.between(particleTime, Instant.now()).toMillis() / 1000.0f);
 			particleSystem.render(new Matrix4f().ortho(0, width, height, 0, -1, 1));
+			particleTime = Instant.now();
 
 			nvgBeginFrame(vg, width, height, 1f);
 

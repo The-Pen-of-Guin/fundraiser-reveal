@@ -8,6 +8,7 @@ public class Particle {
 	float rotation, angularVelocity;
 	float r, g, b, a = 1f;
 	float life, maxLife;
+	float size;
 
 	public Vector2f getPosition() {
 		return position;
@@ -83,5 +84,12 @@ public class Particle {
 	}
 	public void setMaxLife(float maxLife) {
 		this.maxLife = maxLife;
+	}
+
+	public float getSize() {
+		return size;
+	}
+	public void setSize(float size) {
+		this.size = size;
 	}
 }
