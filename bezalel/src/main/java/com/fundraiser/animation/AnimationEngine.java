@@ -1,5 +1,6 @@
 package com.fundraiser.animation;
 
+import org.joml.Matrix4f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.nanovg.NVGColor;
@@ -7,11 +8,14 @@ import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
+import com.fundraiser.effects.ConfettiSystem;
 import com.fundraiser.utils.FFmpegEncoder;
 
 import java.io.IOException;
 import java.nio.*;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -26,6 +30,8 @@ public class AnimationEngine {
 	// The window handle
 	private long window;
 	private long vg;
+
+	private ConfettiSystem particleSystem = new ConfettiSystem();
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
 	private float[] bgColor = {0.0f, 0.0f, 0.0f};
@@ -134,6 +140,10 @@ public class AnimationEngine {
 		// Set the clear color
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
+		particleSystem.init();
+		particleSystem.spawn(960, 540, 150);
+		var particleTime = Instant.now();
+
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while ( !glfwWindowShouldClose(window) ) {
@@ -147,6 +157,9 @@ public class AnimationEngine {
 			glViewport(0, 0, width, height);
 			glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+			particleSystem.update((float)Duration.between(particleTime, Instant.now()).toMillis() / 1000.0f);
+			particleSystem.render(new Matrix4f().ortho(0, width, height, 0, -1, 1));
 
 			nvgBeginFrame(vg, width, height, 1f);
 
