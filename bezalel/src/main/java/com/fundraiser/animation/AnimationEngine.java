@@ -141,7 +141,7 @@ public class AnimationEngine {
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		particleSystem.init();
-		particleSystem.spawn(960, 540, 300);
+		particleSystem.spawn(960, 1080, 250);
 		var particleTime = Instant.now();
 
 		// Run the rendering loop until the user has attempted to close

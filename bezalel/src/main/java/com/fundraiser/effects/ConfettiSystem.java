@@ -21,9 +21,9 @@ public class ConfettiSystem {
 	int vao, quadVBO, instanceVBO, shaderProgram;
 	FloatBuffer instanceData = BufferUtils.createFloatBuffer(MAX_PARTICLES * 8);
 
-	private final float BASE_LIFE = 20f;
+	private final float BASE_LIFE = 8f;
 
-	private final float GRAVITY = 300f;
+	private final float GRAVITY = 1800f;
 
 	public void init() {
 		// Quad mesh (2 trianfles, unit size centered at origin)
@@ -69,10 +69,10 @@ public class ConfettiSystem {
 		var rnd = new Random();
 		for (int i = 0; i < count && particles.size() < MAX_PARTICLES; i++) {
 			var p = new Particle();
-			p.setSize(10f);
+			p.setSize(20f + rnd.nextFloat() * 20f);
 		  	p.setPosition(x, y);
-		  	float angle = (float)(rnd.nextDouble() * -Math.PI); // upward cone
-		  	float speed = 400 + rnd.nextFloat() * 300;
+		  	float angle = (float)(rnd.nextDouble() * -(1f/6f)*Math.PI - (Math.PI/2f - 0.25));
+		  	float speed = 2000 + rnd.nextFloat() * 500;
 		  	p.setVelocity((float)Math.cos(angle) * speed, (float)Math.sin(angle) * speed);
 		  	p.setRotation(rnd.nextFloat() * 360);
 		  	p.setAngularVelocity((rnd.nextFloat() - 0.5f) * 720);
