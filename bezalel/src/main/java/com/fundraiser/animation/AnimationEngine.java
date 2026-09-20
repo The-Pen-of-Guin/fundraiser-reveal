@@ -31,6 +31,7 @@ public class AnimationEngine {
 	private long window;
 	private long vg;
 
+	private boolean useConfetti = false;
 	private ConfettiSystem particleSystem = new ConfettiSystem();
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
@@ -44,6 +45,7 @@ public class AnimationEngine {
 	public void setBgColor(float r, float g, float b) { this.bgColor = new float[]{r, g, b}; }
 	public void setTextColor(float r, float g, float b) { this.textColor = new float[]{r, g, b}; }
 	public void setFont(String font) { this.font = font; }
+	public void useConfetti(boolean useConfetti) { this.useConfetti = useConfetti; }
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -140,9 +142,12 @@ public class AnimationEngine {
 		// Set the clear color
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
-		particleSystem.init();
-		particleSystem.spawn(960, 1080, 250);
-		var particleTime = Instant.now();
+		Instant particleTime = null;
+		if (useConfetti) {
+			particleSystem.init();
+			particleSystem.spawn(960, 1080, 250);
+			particleTime = Instant.now();
+		}
 
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
@@ -158,9 +163,11 @@ public class AnimationEngine {
 			glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			particleSystem.update((float)Duration.between(particleTime, Instant.now()).toMillis() / 1000.0f);
-			particleSystem.render(new Matrix4f().ortho(0, width, height, 0, -1, 1));
-			particleTime = Instant.now();
+			if (useConfetti && particleTime != null) {
+				particleSystem.update((float)Duration.between(particleTime, Instant.now()).toMillis() / 1000.0f);
+				particleSystem.render(new Matrix4f().ortho(0, width, height, 0, -1, 1));
+				particleTime = Instant.now();
+			}
 
 			nvgBeginFrame(vg, width, height, 1f);
 
