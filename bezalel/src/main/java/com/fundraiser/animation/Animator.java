@@ -12,6 +12,12 @@ import com.fundraiser.animation.nodes.AnimationNode;
 import com.fundraiser.animation.nodes.CountupAnimation;
 import com.fundraiser.animation.nodes.ScrambleAnimation;
 import com.fundraiser.animation.nodes.SetAnimation;
+import com.fundraiser.datamapping.AnimationNodeMapper;
+import com.fundraiser.utils.settings.SettingsSaver;
+import com.fundraiser.utils.settings.models.ColorSettings;
+import com.fundraiser.utils.settings.models.NodeSettings;
+import com.fundraiser.utils.settings.models.Settings;
+import com.fundraiser.utils.settings.models.TextSettings;
 
 public class Animator {
 	private int currentAmountCents = 0;
@@ -45,6 +51,15 @@ public class Animator {
 		}).start();
 
 		processAnimationNodes(animationNodes);
+	}
+
+	public void saveSettings() {
+		var colorSettings = new ColorSettings(bgColor, textColor);
+		var textSettings = new TextSettings(font);
+		var nodeSettings = new NodeSettings(animationNodes.stream()
+			.map(node -> AnimationNodeMapper.INSTANCE.nodeToDto(node)).toList());
+		var settings = new Settings(colorSettings, textSettings, nodeSettings, null);
+		SettingsSaver.save(settings);
 	}
 
 	public void setAnimationNodes(Queue<AnimationNode> animationNodes) {
