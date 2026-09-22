@@ -40,4 +40,11 @@ public class AnimationController {
 		animationService.clearAnimation();
 		return ResponseEntity.ok("Success!");
 	}
+
+	@PostMapping("/saveSettings")
+	public ResponseEntity<String> saveSettings(
+	) {
+		animationService.saveSettings();
+		return ResponseEntity.ok("Success!");
+	}
 }

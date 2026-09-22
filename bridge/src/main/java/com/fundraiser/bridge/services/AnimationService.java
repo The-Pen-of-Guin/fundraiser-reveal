@@ -6,4 +6,6 @@ public interface AnimationService {
 	void saveAnimation();	
 
 	void clearAnimation();
+
+	void saveSettings();
 }

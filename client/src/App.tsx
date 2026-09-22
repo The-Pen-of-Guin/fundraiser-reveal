@@ -55,6 +55,13 @@ async function save(nodes: Node[]) {
   })
 }
 
+async function saveSettings(nodes: Node[]) {
+  await sendNodes(nodes);
+  await fetch("http://localhost:8080/api/v1/animation/saveSettings", {
+    method: 'POST',
+  })
+}
+
 async function sendNodes(nodes: Node[]) {
   for (const node of nodes) {
     const animation: AnimationRequest = {
@@ -371,6 +378,11 @@ export default function App() {
             onClick={async () => await save(nodes)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
           >Save</button>
+
+          <button
+            onClick={async () => await saveSettings(nodes)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+          >Save Settings</button>
         </div>
       </div>
     </div>

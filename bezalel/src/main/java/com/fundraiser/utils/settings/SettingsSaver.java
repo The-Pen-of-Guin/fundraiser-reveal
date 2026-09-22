@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fundraiser.utils.settings.models.Settings;
 
 public class SettingsSaver {
-	private static ObjectMapper objectMapper;
+	private static ObjectMapper objectMapper = new ObjectMapper();
 
 	public static void save(Settings settings) {
 		try {

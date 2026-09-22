@@ -49,6 +49,12 @@ public class AnimationServiceImpl implements AnimationService {
 		nodeService.clearNodes();
 	}
 
+	@Override
+	public void saveSettings() {
+		setupAnimation();
+		animator.saveSettings();
+	}
+
 	private void setupAnimation() {
 		var nodes = nodeService.getNodes();
 		animator.setAnimationNodes(new ArrayDeque<>(nodes));

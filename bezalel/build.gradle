@@ -10,6 +10,8 @@ repositories {
 }
 
 def joglVersion = '1.10.5'
+def jacksonVersion = '2.17.0'
+def mapstructVersion = '1.6.3'
 
 dependencies {
     // Use JUnit Jupiter for testing.
@@ -19,6 +21,15 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+
+    implementation platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion")
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+
+    implementation "org.mapstruct:mapstruct:$mapstructVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 
     implementation "org.joml:joml:$joglVersion"
 
