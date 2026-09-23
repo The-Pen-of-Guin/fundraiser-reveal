@@ -89,7 +89,7 @@ export function OverlayMenu({
 	  />
 	</div>
 	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
-	  <label className="font-semibold text-gray-800">Text Color</label>
+	  <label className="font-semibold text-gray-800">Font Size</label>
 	  <input
 	    type="string"
 	    value={fontSize}
