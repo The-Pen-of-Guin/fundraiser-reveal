@@ -38,7 +38,7 @@ public class AnimationEngine {
 	private float[] bgColor = {0.0f, 0.0f, 0.0f};
 	private float[] textColor = {1.0f, 1.0f, 1.0f};
 	private String font = "Roboto";
-	private int fontSize = 150;
+	private int fontSize = 200;
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }

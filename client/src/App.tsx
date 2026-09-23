@@ -228,15 +228,24 @@ export default function App() {
     settingsResponse.then(
       settings => {
         const bgColor: number[] = settings.colorSettings.backgroundColor;
-        const adjustedBgColor = bgColor.map((value) => (value * 255));
-        setBackgroundColor({r: adjustedBgColor[0], g: adjustedBgColor[1], b: adjustedBgColor[2]})
+        const adjustedBgColor = bgColor.map((value) => Math.max(0, Math.min(255, Math.round(value * 255))));
+        setBackgroundColor({r: adjustedBgColor[0], g: adjustedBgColor[1], b: adjustedBgColor[2]});
+        postBackgroundColor({r: adjustedBgColor[0], g: adjustedBgColor[1], b: adjustedBgColor[2]});
+        adjustedBgColor.forEach(console.log);
 
-        const textColor: number[] = settings.colorSettings.textColor;
-        const adjustedTextColor = textColor.map((value) => value * 255);
-        setTextColor({r: adjustedTextColor[0], g: adjustedTextColor[1], b: adjustedTextColor[2]})
+        const texColor: number[] = settings.colorSettings.textColor;
+        const adjustedTextColor = texColor.map((value) => Math.max(0, Math.min(255, Math.round(value * 255))));
+        setTextColor({r: adjustedTextColor[0], g: adjustedTextColor[1], b: adjustedTextColor[2]});
+        postTextColor({r: adjustedTextColor[0], g: adjustedTextColor[1], b: adjustedTextColor[2]});
+        adjustedTextColor.forEach(console.log);
 
         var textFont = settings.textSettings.font;
         setFont(textFont);
+
+        const request: SetFontRequest = {
+          font: textFont,
+        };
+        postFont(request);
 
         setNodes([]);
         var nodeResponses = settings.nodeSettings.nodes;
