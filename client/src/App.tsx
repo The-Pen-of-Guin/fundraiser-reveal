@@ -56,10 +56,21 @@ async function save(nodes: Node[]) {
 }
 
 async function saveSettings(nodes: Node[]) {
+  await clear();
   await sendNodes(nodes);
   await fetch("http://localhost:8080/api/v1/animation/saveSettings", {
     method: 'POST',
   })
+}
+
+async function loadSettings() {
+  const response = await fetch("http://localhost:8080/api/v1/animation/loadSettings");
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  return await response.json();
 }
 
 async function sendNodes(nodes: Node[]) {
@@ -179,6 +190,7 @@ async function postFont(payload: SetFontRequest) {
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
   const [backgroundColor, setBackgroundColor] = useState({ r: 255, g: 255, b:255 });
   const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
@@ -210,6 +222,44 @@ export default function App() {
   const changeType = (id: string, type: NodeType) => {
     updateNode(id, { type, settings: defaultSettings(type) });
   };
+
+  if (!isSettingsLoaded) {
+    var settingsResponse = loadSettings();
+    settingsResponse.then(
+      settings => {
+        const bgColor: number[] = settings.colorSettings.backgroundColor;
+        const adjustedBgColor = bgColor.map((value) => (value * 255));
+        setBackgroundColor({r: adjustedBgColor[0], g: adjustedBgColor[1], b: adjustedBgColor[2]})
+
+        const textColor: number[] = settings.colorSettings.textColor;
+        const adjustedTextColor = textColor.map((value) => value * 255);
+        setTextColor({r: adjustedTextColor[0], g: adjustedTextColor[1], b: adjustedTextColor[2]})
+
+        var textFont = settings.textSettings.font;
+        setFont(textFont);
+
+        setNodes([]);
+        var nodeResponses = settings.nodeSettings.nodes;
+        for (const node of nodeResponses) {
+          const animationNode: Node = {
+            id: crypto.randomUUID(),
+            type: node.animation.animationType,
+            settings: {
+              targetAmountCents: node.targetAmountCents,
+              startDelayMs: node.animation.startDelayMs,
+              durationMs: node.animation.durationMs,
+            },
+          }
+          setNodes((prev) => [
+            ...prev,
+            (animationNode),
+          ]);
+        }
+        setIsSettingsLoaded(true);
+      }).catch((error) => {
+        console.error("Error loading settings: ", error);
+      });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -274,7 +324,7 @@ export default function App() {
                     <label>Target Amount (dollars)</label>
                     <input
                       type="string"
-                      placeholder="targetAmountCents"
+                      value={((node.settings.targetAmountCents ?? 0) / 100.0).toString()}
                       onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -283,7 +333,7 @@ export default function App() {
                     <label>Start Delay (seconds)</label>
                     <input
                       type="string"
-                      placeholder="startDelaySecodns"
+                      value={((node.settings.startDelayMs ?? 0) / 1000.0).toString()}
                       onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -297,7 +347,7 @@ export default function App() {
                     <label>Target Amount (dollars)</label>
                     <input
                       type="string"
-                      placeholder="targetAmountCents"
+                      value={((node.settings.targetAmountCents ?? 0) / 100.0).toString()}
                       onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -306,7 +356,7 @@ export default function App() {
                     <label>Start Delay (seconds)</label>
                     <input
                       type="string"
-                      placeholder="startDelayMs"
+                      value={((node.settings.startDelayMs ?? 0) / 1000.0).toString()}
                       onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -315,7 +365,7 @@ export default function App() {
                     <label>Duration (seconds)</label>
                     <input
                       type="string"
-                      placeholder="durationMs"
+                      value={((node.settings.durationMs ?? 0) / 1000.0).toString()}
                       onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -329,7 +379,7 @@ export default function App() {
                     <label>Target Amount (dollars)</label>
                     <input
                       type="string"
-                      placeholder="targetAmountCents"
+                      value={((node.settings.targetAmountCents ?? 0) / 100.0).toString()}
                       onChange={(e) => updateSettings(node.id, { targetAmountCents: Number(e.target.value) * 100.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -338,7 +388,7 @@ export default function App() {
                     <label>Start Delay (seconds)</label>
                     <input
                       type="string"
-                      placeholder="startDelayMs"
+                      value={((node.settings.startDelayMs ?? 0) / 1000.0).toString()}
                       onChange={(e) => updateSettings(node.id, { startDelayMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />
@@ -347,7 +397,7 @@ export default function App() {
                     <label>Duration (seconds)</label>
                     <input
                       type="string"
-                      placeholder="durationMs"
+                      value={((node.settings.durationMs ?? 0) / 1000.0).toString()}
                       onChange={(e) => updateSettings(node.id, { durationMs: Number(e.target.value) * 1000.0 })}
                       className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
                     />

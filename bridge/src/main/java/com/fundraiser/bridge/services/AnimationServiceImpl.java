@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fundraiser.animation.Animator;
 import com.fundraiser.animation.nodes.AnimationNode;
+import com.fundraiser.utils.settings.models.Settings;
 
 @Service
 public class AnimationServiceImpl implements AnimationService {
@@ -55,6 +56,11 @@ public class AnimationServiceImpl implements AnimationService {
 		animator.saveSettings();
 	}
 
+	@Override
+	public Settings loadSettings() {
+		return animator.loadSettings();
+	}
+
 	private void setupAnimation() {
 		var nodes = nodeService.getNodes();
 		animator.setAnimationNodes(new ArrayDeque<>(nodes));
@@ -63,7 +69,7 @@ public class AnimationServiceImpl implements AnimationService {
 		animator.setBackgroundColor(backgroundColor.r()/255f, backgroundColor.g()/255f, backgroundColor.b()/255f);
 
 		var textColor = sceneService.getTextColor().orElseThrow(() -> new RuntimeException("Text color has not been set."));
-		animator.setTextColor(textColor.r()/255f, textColor.g()/255, textColor.b()/255f);
+		animator.setTextColor(textColor.r()/255f, textColor.g()/255f, textColor.b()/255f);
 
 		var textFont = sceneService.getTextFont().orElseThrow(() -> new RuntimeException("Text font has not been set."));
 		animator.setTextFont(textFont);

@@ -17,4 +17,13 @@ public class SettingsSaver {
 			e.printStackTrace();
 		}
 	}
+
+	public static Settings load() {
+		try {
+			var settings = objectMapper.readValue(new File("bezalel-settings.json"), Settings.class);
+			return settings;
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to load from settings file: ", e);
+		}
+	}
 }

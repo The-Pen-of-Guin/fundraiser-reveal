@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -60,6 +61,24 @@ public class Animator {
 			.map(node -> AnimationNodeMapper.INSTANCE.nodeToDto(node)).toList());
 		var settings = new Settings(colorSettings, textSettings, nodeSettings, null);
 		SettingsSaver.save(settings);
+	}
+
+	public Settings loadSettings() {
+		Settings settings = SettingsSaver.load();
+
+		var bgColor = settings.colorSettings().backgroundColor();
+		setBackgroundColor(bgColor[0], bgColor[1], bgColor[2]);
+
+		var textColor = settings.colorSettings().textColor();
+		setTextColor(textColor[0], textColor[1], textColor[2]);
+
+		var font = settings.textSettings().font();
+		setTextFont(font);
+
+		List<AnimationNode> nodes = settings.nodeSettings().nodes().stream().map(dto -> AnimationNodeMapper.INSTANCE.dtoToNode(dto)).toList();
+		setAnimationNodes(new ArrayDeque<>(nodes));
+
+		return settings;
 	}
 
 	public void setAnimationNodes(Queue<AnimationNode> animationNodes) {

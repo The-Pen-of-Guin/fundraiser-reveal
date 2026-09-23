@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fundraiser.bridge.services.AnimationService;
+import com.fundraiser.utils.settings.models.Settings;
 
 @RestController
 @RequestMapping("/api/v1/animation")
@@ -46,5 +47,10 @@ public class AnimationController {
 	) {
 		animationService.saveSettings();
 		return ResponseEntity.ok("Success!");
+	}
+
+	@GetMapping("/loadSettings")
+	public ResponseEntity<Settings> loadSettings() {
+		return ResponseEntity.ok(animationService.loadSettings());
 	}
 }

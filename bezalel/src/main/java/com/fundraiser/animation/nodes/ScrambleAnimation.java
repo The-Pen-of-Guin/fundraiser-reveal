@@ -4,7 +4,7 @@ public class ScrambleAnimation extends Animation {
 	private final static int TIME_BETWEEN_NUMBERS_MS = 75;
 
 	public ScrambleAnimation(int startDelayMs, int durationMs) {
-		super(startDelayMs, durationMs);
+		super("Scramble", startDelayMs, durationMs);
 	}
 
 	public int getTimeBetweenNumbersMs() {

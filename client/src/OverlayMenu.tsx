@@ -22,13 +22,19 @@ export function OverlayMenu({
   ];
 
   const rgbToHex = (r: number, g: number, b: number) =>
-    "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("");
+    "#" + [r, g, b].map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
 
   const hexToRgb = (hex: string) => ({
     r: parseInt(hex.slice(1, 3), 16),
     g: parseInt(hex.slice(3, 5), 16),
     b: parseInt(hex.slice(5, 7), 16),
   });
+
+  console.log("Overlay Background: ");
+  console.log(rgbToHex(backgroundColor.r, backgroundColor.g, backgroundColor.b));
+
+  console.log("Overlay Text: ");
+  console.log(rgbToHex(textColor.r, textColor.g, textColor.b));
 
   return (
     <div
