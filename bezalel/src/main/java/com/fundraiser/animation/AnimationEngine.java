@@ -45,6 +45,7 @@ public class AnimationEngine {
 	public void setBgColor(float r, float g, float b) { this.bgColor = new float[]{r, g, b}; }
 	public void setTextColor(float r, float g, float b) { this.textColor = new float[]{r, g, b}; }
 	public void setFont(String font) { this.font = font; }
+	public void setFontSize(int fontSize) { this.fontSize = fontSize; }
 	public void useConfetti(boolean useConfetti) { this.useConfetti = useConfetti; }
 
 	public void run() {

@@ -73,5 +73,8 @@ public class AnimationServiceImpl implements AnimationService {
 
 		var textFont = sceneService.getTextFont().orElseThrow(() -> new RuntimeException("Text font has not been set."));
 		animator.setTextFont(textFont);
+
+		var fontSize = sceneService.getTextFontSize().orElseThrow(() -> new RuntimeException("Font size has not been set."));
+		animator.setTextFontSize(fontSize);
 	}
 }

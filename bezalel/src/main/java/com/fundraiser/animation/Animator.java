@@ -26,6 +26,7 @@ public class Animator {
 	private float[] bgColor = {0.0f, 0.0f, 0.0f};
 	private float[] textColor = {1.0f, 1.0f, 1.0f};
 	private String font = "Roboto";
+	private int fontSize = 200;
 
 	private Queue<AnimationNode> animationNodes = new ArrayDeque<>();
 
@@ -39,6 +40,7 @@ public class Animator {
 		animationEngine.setBgColor(bgColor[0], bgColor[1], bgColor[2]);
 		animationEngine.setTextColor(textColor[0], textColor[1], textColor[2]);
 		animationEngine.setFont(font);
+		animationEngine.setFontSize(fontSize);
 
 		// Reset amount when starting. This resets previous runs.
 		currentAmountCents = 0;
@@ -105,8 +107,12 @@ public class Animator {
 		textColor = new float[] {r, g, b};
 	}
 
-	public void setTextFont(String textFontPath) {
-		font = textFontPath;
+	public void setTextFont(String font) {
+		this.font = font;
+	}
+
+	public void setTextFontSize(int fontSize) {
+		this.fontSize = fontSize;
 	}
 
 	private void colorCheck(float r, float g, float b) {

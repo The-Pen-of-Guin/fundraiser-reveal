@@ -5,6 +5,8 @@ type OverlayMenuProps = {
   onTextColorChange: (color: { r: number, g: number, b: number }) => void;
   font: string;
   onFontChange: (font: string) => void;
+  fontSize: number;
+  onFontSizeChange: (fontSize: number) => void;
   onClose: () => void;
 };
 
@@ -15,6 +17,8 @@ export function OverlayMenu({
   onTextColorChange,
   font,
   onFontChange,
+  fontSize,
+  onFontSizeChange,
   onClose
 }: OverlayMenuProps) {
   const fontOptions = [
@@ -82,6 +86,14 @@ export function OverlayMenu({
 	    type="color"
 	    value={rgbToHex(textColor.r, textColor.g, textColor.b)}
 	    onChange={(e) => onTextColorChange(hexToRgb(e.target.value))}
+	  />
+	</div>
+	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>
+	  <label className="font-semibold text-gray-800">Text Color</label>
+	  <input
+	    type="string"
+	    value={fontSize}
+	    onChange={(e) => onFontSizeChange(Math.round(+e.target.value))}
 	  />
 	</div>
 	<div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "1rem", marginLeft: "1rem" }}>

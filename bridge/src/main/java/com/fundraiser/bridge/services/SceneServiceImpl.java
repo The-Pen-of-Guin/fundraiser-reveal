@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.fundraiser.bridge.controllers.scene.SetBackgroundColorRequest;
 import com.fundraiser.bridge.controllers.scene.SetTextColorRequest;
 import com.fundraiser.bridge.controllers.scene.SetTextFontRequest;
+import com.fundraiser.bridge.controllers.scene.SetTextFontSizeRequest;
 import com.fundraiser.bridge.models.scene.Color;
 
 @Service
@@ -14,6 +15,7 @@ public class SceneServiceImpl implements SceneService {
 	private Color backgroundColor = new Color((short)0, (short)0, (short)0);
 	private Color textColor = new Color((short)255, (short)255, (short)255);
 	private String fontName = "Roboto";
+	private int fontSize = 200;
 
 	@Override
 	public void setBackgroundColor(SetBackgroundColorRequest request) {
@@ -43,5 +45,15 @@ public class SceneServiceImpl implements SceneService {
 	@Override
 	public Optional<String> getTextFont() {
 		return Optional.ofNullable(fontName);
+	}
+
+	@Override
+	public void setTextFontSize(SetTextFontSizeRequest request) {
+		this.fontSize = request.size();
+	}
+
+	@Override
+	public Optional<Integer> getTextFontSize() {
+		return Optional.ofNullable(Integer.valueOf(fontSize));
 	}
 }

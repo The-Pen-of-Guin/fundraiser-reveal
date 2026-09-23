@@ -34,4 +34,10 @@ public class SceneController {
 		sceneService.setTextFont(request);
 		return ResponseEntity.ok("Success!");
 	}
+
+	@PostMapping("/text/font/size")
+	public ResponseEntity<String> setTextFontSize(@RequestBody SetTextFontSizeRequest request) {
+		sceneService.setTextFontSize(request);
+		return ResponseEntity.ok("Success!");
+	}
 }

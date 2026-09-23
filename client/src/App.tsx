@@ -187,6 +187,25 @@ async function postFont(payload: SetFontRequest) {
   }
 }
 
+interface SetFontSizeRequest {
+  size: number,
+}
+
+async function postFontSize(payload: SetFontSizeRequest) {
+  const response = await fetch("http://localhost:8080/api/v1/scene/text/font/size", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP error! Status: ${response.status}');
+  }
+}
+
 export default function App() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -196,6 +215,7 @@ export default function App() {
   const [textColor, setTextColor] = useState({ r: 0, g: 0, b:0 });
 
   const [font, setFont] = useState("Arial");
+  const [fontSize, setFontSize] = useState(200);
 
   const addNode = () => {
     const id = crypto.randomUUID();
@@ -277,6 +297,7 @@ export default function App() {
           backgroundColor={backgroundColor}
           textColor={textColor}
           font={font}
+          fontSize={fontSize}
           onBackgroundColorChange={(c) => {
             setBackgroundColor(c);
             postBackgroundColor(c);
@@ -291,6 +312,13 @@ export default function App() {
               font: f,
             };
             postFont(request);
+          }}
+          onFontSizeChange={(s) => {
+            setFontSize(s);
+            const request: SetFontSizeRequest = {
+              size: s,
+            };
+            postFontSize(request);
           }}
           onClose={() => setIsSettingsOpen(false)}
         />}
