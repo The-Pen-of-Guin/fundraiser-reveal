@@ -1,6 +1,5 @@
 package com.fundraiser.animation;
 
-import org.joml.Matrix4f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.nanovg.NVGColor;
@@ -14,8 +13,6 @@ import com.fundraiser.utils.FFmpegEncoder;
 import java.io.IOException;
 import java.nio.*;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -31,7 +28,7 @@ public class AnimationEngine {
 	private long window;
 	private long vg;
 
-	private boolean useConfetti = false;
+	private boolean useConfetti = true;
 	private ConfettiSystem particleSystem = new ConfettiSystem();
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
@@ -143,11 +140,8 @@ public class AnimationEngine {
 		// Set the clear color
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
-		Instant particleTime = null;
 		if (useConfetti) {
 			particleSystem.init();
-			particleSystem.spawn(960, 1080, 250);
-			particleTime = Instant.now();
 		}
 
 		// Run the rendering loop until the user has attempted to close
@@ -164,10 +158,8 @@ public class AnimationEngine {
 			glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			if (useConfetti && particleTime != null) {
-				particleSystem.update((float)Duration.between(particleTime, Instant.now()).toMillis() / 1000.0f);
-				particleSystem.render(new Matrix4f().ortho(0, width, height, 0, -1, 1));
-				particleTime = Instant.now();
+			if (useConfetti) {
+				particleSystem.update(width / 2f, height / 2f, 1920, 1080);
 			}
 
 			nvgBeginFrame(vg, width, height, 1f);
