@@ -165,13 +165,14 @@ public class AnimationEngine {
 
 			if (useConfetti) {
 				for (int i = 0; i < particleSystems.size(); i++) {
+					var scale = 2.5f;
 					particleSystems.get(i)
 						.update(
 							width / 2f
-							- (particleSystems.size() - 1) * 200
-							+ 200 * 2 * i,
+							- (float)(particleSystems.size() - 1) * 135f * scale
+							+ 135f * 2f * scale * (float)i,
 							height / 2f,
-							2.5f, 2.5f,
+							scale, scale,
 							width, height
 						);
 				}
@@ -217,6 +218,21 @@ public class AnimationEngine {
         	        glViewport(0, 0, width, height);
         	        glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
         	        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			if (useConfetti) {
+				for (int i = 0; i < particleSystems.size(); i++) {
+					var scale = 2.5f;
+					particleSystems.get(i)
+						.update(
+							width / 2f
+							- (float)(particleSystems.size() - 1) * 135f * scale
+							+ 135f * 2f * scale * (float)i,
+							height / 2f,
+							scale, scale,
+							width, height
+						);
+				}
+			}
 
         	        nvgBeginFrame(vg, width, height, 1f);
         	        NanoVG.nvgFontSize(vg, fontSize);

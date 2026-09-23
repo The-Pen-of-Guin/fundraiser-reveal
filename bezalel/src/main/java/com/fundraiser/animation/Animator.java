@@ -50,7 +50,7 @@ public class Animator {
 			if (outputFile == null)
 				animationEngine.run();
 			else
-				animationEngine.run(outputFile, fps, durationSeconds);	
+				animationEngine.run(outputFile, fps, durationSeconds + 28); // Adding 28 seconds for confetti
 		}).start();
 
 		processAnimationNodes(animationNodes);
