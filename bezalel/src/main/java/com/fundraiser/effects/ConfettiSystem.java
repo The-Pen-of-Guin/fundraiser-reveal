@@ -1,5 +1,6 @@
 package com.fundraiser.effects;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,7 +22,7 @@ public class ConfettiSystem {
 	private GifAnimation gif;
 
 	public void init() {
-		gif = new GifAnimation("test.gif");
+		gif = new GifAnimation("conffeti.gif");
 	}
 
 	public void spawn(float x, float y, int count) {
@@ -120,6 +121,7 @@ public class ConfettiSystem {
 
 			BufferedImage canvas = new BufferedImage(logicalWidth, logicalHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = canvas.createGraphics();
+			g.setBackground(new Color(0, 0, 0, 0));
 
 			for (int i = 0; i < frames; i++) {
 				BufferedImage raw = reader.read(i);
@@ -151,6 +153,7 @@ public class ConfettiSystem {
 				} else if (disposalMethod.equals("restoreToPrevious") && previous != null) {
 					canvas = previous;
 					g = canvas.createGraphics();
+					g.setBackground(new Color(0, 0, 0, 0));
 				}
 
 				ByteBuffer buffer = convertBufferedImageToByteBuffer(frameSnapshot);
