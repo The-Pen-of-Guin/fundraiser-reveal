@@ -28,9 +28,9 @@ public class ConfettiSystem {
 	public void spawn(float x, float y, int count) {
 	}
 
-	public void update(float x, float y, int screenWidth, int screenHeight) {
+	public void update(float x, float y, float xScale, float yScale, int screenWidth, int screenHeight) {
 		gif.update();
-		drawOverlayQuad(gif.getCurrentTextureId(), x - gif.getWidth() / 2f, y - gif.getHeight() / 2f, gif.getWidth(), gif.getHeight(), screenWidth, screenHeight);
+		drawOverlayQuad(gif.getCurrentTextureId(), x - (gif.getWidth() * xScale) / 2f, y - (gif.getHeight() * yScale) / 2f, gif.getWidth() * xScale, gif.getHeight() * yScale, screenWidth, screenHeight);
 	}
 
 	private static void drawOverlayQuad(int textureId, float x, float y, float w, float h,

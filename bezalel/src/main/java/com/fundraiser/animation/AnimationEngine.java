@@ -13,6 +13,7 @@ import com.fundraiser.utils.FFmpegEncoder;
 import java.io.IOException;
 import java.nio.*;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -29,7 +30,7 @@ public class AnimationEngine {
 	private long vg;
 
 	private boolean useConfetti = true;
-	private ConfettiSystem particleSystem = new ConfettiSystem();
+	private List<ConfettiSystem> particleSystems;
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
 	private float[] bgColor = {0.0f, 0.0f, 0.0f};
@@ -141,7 +142,13 @@ public class AnimationEngine {
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		if (useConfetti) {
-			particleSystem.init();
+			particleSystems = List.of(
+				new ConfettiSystem(),
+				new ConfettiSystem(),
+				new ConfettiSystem(),
+				new ConfettiSystem()
+			);
+			particleSystems.forEach(system -> system.init());
 		}
 
 		// Run the rendering loop until the user has attempted to close
@@ -159,7 +166,17 @@ public class AnimationEngine {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 			if (useConfetti) {
-				particleSystem.update(width / 2f, height / 2f, 1920, 1080);
+				for (int i = 0; i < particleSystems.size(); i++) {
+					particleSystems.get(i)
+						.update(
+							width / 2f
+							- (particleSystems.size() - 1) * 200
+							+ 200 * 2 * i,
+							height / 2f,
+							2.5f, 2.5f,
+							width, height
+						);
+				}
 			}
 
 			nvgBeginFrame(vg, width, height, 1f);
