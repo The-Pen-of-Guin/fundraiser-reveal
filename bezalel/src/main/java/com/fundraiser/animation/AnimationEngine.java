@@ -29,7 +29,7 @@ public class AnimationEngine {
 	private long window;
 	private long vg;
 
-	private boolean useConfetti = true;
+	private boolean useConfetti = false;
 	private List<ConfettiSystem> particleSystems;
 
 	private AtomicReference<String> text = new AtomicReference<>("$0");
@@ -44,7 +44,7 @@ public class AnimationEngine {
 	public void setTextColor(float r, float g, float b) { this.textColor = new float[]{r, g, b}; }
 	public void setFont(String font) { this.font = font; }
 	public void setFontSize(int fontSize) { this.fontSize = fontSize; }
-	public void useConfetti(boolean useConfetti) { this.useConfetti = useConfetti; }
+	public void setUseConfetti(boolean useConfetti) { this.useConfetti = useConfetti; }
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -135,21 +135,19 @@ public class AnimationEngine {
 		// Load a system font
 		int loadedFont = NanoVG.nvgCreateFontMem(vg, "font", fontData, false);
 		if (loadedFont == -1) System.err.println("Font failed to load - check the path");
+
+		particleSystems = List.of(
+			new ConfettiSystem(),
+			new ConfettiSystem(),
+			new ConfettiSystem(),
+			new ConfettiSystem()
+		);
+		particleSystems.forEach(system -> system.init());
 	}
 
 	private void loop() {
 		// Set the clear color
 		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
-		if (useConfetti) {
-			particleSystems = List.of(
-				new ConfettiSystem(),
-				new ConfettiSystem(),
-				new ConfettiSystem(),
-				new ConfettiSystem()
-			);
-			particleSystems.forEach(system -> system.init());
-		}
 
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.

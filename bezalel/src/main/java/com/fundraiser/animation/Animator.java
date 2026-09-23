@@ -54,6 +54,16 @@ public class Animator {
 		}).start();
 
 		processAnimationNodes(animationNodes);
+
+		var startTime = Instant.now();
+
+		while (Duration.between(startTime, Instant.now()).toMillis() <= 3000);
+
+		animationEngine.setUseConfetti(true);
+
+		while (Duration.between(startTime, Instant.now()).toMillis() <= 25000);
+
+		animationEngine.setUseConfetti(false);
 	}
 
 	public void saveSettings() {

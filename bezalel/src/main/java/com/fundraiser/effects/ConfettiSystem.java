@@ -21,8 +21,11 @@ import static org.lwjgl.opengl.GL30.*;
 public class ConfettiSystem {
 	private GifAnimation gif;
 
+	private boolean initialized;
+
 	public void init() {
 		gif = new GifAnimation("conffeti.gif");
+		initialized = true;
 	}
 
 	public void spawn(float x, float y, int count) {
@@ -31,6 +34,10 @@ public class ConfettiSystem {
 	public void update(float x, float y, float xScale, float yScale, int screenWidth, int screenHeight) {
 		gif.update();
 		drawOverlayQuad(gif.getCurrentTextureId(), x - (gif.getWidth() * xScale) / 2f, y - (gif.getHeight() * yScale) / 2f, gif.getWidth() * xScale, gif.getHeight() * yScale, screenWidth, screenHeight);
+	}
+
+	public boolean getInitialized() {
+		return initialized;
 	}
 
 	private static void drawOverlayQuad(int textureId, float x, float y, float w, float h,
