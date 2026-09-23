@@ -262,10 +262,18 @@ export default function App() {
         var textFont = settings.textSettings.font;
         setFont(textFont);
 
-        const request: SetFontRequest = {
+        const fontRequest: SetFontRequest = {
           font: textFont,
         };
-        postFont(request);
+        postFont(fontRequest);
+
+        var textFontSize = settings.textSettings.fontSize;
+        setFontSize(textFontSize);
+
+        var fontSizeRequest: SetFontSizeRequest = {
+          size: textFontSize
+        };
+        postFontSize(fontSizeRequest);
 
         setNodes([]);
         var nodeResponses = settings.nodeSettings.nodes;

@@ -58,7 +58,7 @@ public class Animator {
 
 	public void saveSettings() {
 		var colorSettings = new ColorSettings(bgColor, textColor);
-		var textSettings = new TextSettings(font);
+		var textSettings = new TextSettings(font, fontSize);
 		var nodeSettings = new NodeSettings(animationNodes.stream()
 			.map(node -> AnimationNodeMapper.INSTANCE.nodeToDto(node)).toList());
 		var settings = new Settings(colorSettings, textSettings, nodeSettings, null);
@@ -76,6 +76,9 @@ public class Animator {
 
 		var font = settings.textSettings().font();
 		setTextFont(font);
+
+		var fontSize = settings.textSettings().fontSize();
+		setTextFontSize(fontSize);
 
 		List<AnimationNode> nodes = settings.nodeSettings().nodes().stream().map(dto -> AnimationNodeMapper.INSTANCE.dtoToNode(dto)).toList();
 		setAnimationNodes(new ArrayDeque<>(nodes));
