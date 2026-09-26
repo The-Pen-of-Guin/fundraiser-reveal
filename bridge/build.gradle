@@ -110,7 +110,7 @@ tasks.register('packageMacApp', Exec) {
         '--dest', outputDir,        // Where to save the output .app
         '--name', 'MyBridgeApp',     // The name of your executable Mac App
         '--main-jar', jarName,      // The name of your JAR file
-        '--main-class', 'org.springframework.boot.loader.launch.JarLauncher' // Spring Boot's internal launcher
+        '--main-class', 'org.springframework.boot.loader.launch.JarLauncher', // Spring Boot's internal launcher
         '--java-options', '-XstartOnFirstThread'
 }
 
