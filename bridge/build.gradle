@@ -6,7 +6,9 @@ plugins {
 }
 
 project.ext.lwjglVersion = "3.3.6"
-project.ext.lwjglNatives = "natives-linux"
+project.ext.lwjglNatives = System.getProperty('os.name').toLowerCase().contains('mac') ?
+    (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') :
+    'natives-linux'
 
 repositories {
 	mavenCentral()
@@ -53,5 +55,61 @@ application {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+def clientDir = file("$projectDir/../client/")
+
+tasks.register('npmInstallClient', Exec) {
+    workingDir clientDir
+    inputs.file(new File(clientDir, "package.json"))
+    outputs.dir(new File(clientDir, "node_modules"))
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'npm install'
+    } else {
+        commandLine 'npm', 'install'
+    }
+}
+
+// 2. Run Vite build inside the client directory
+tasks.register('npmBuildClient', Exec) {
+    dependsOn npmInstallClient
+    workingDir clientDir
+    inputs.dir(clientDir)
+    outputs.dir(new File(clientDir, "dist")) 
+    
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'npm run build'
+    } else {
+        commandLine 'npm', 'run', 'build'
+    }
+}
+
+// 3. Inject the client's build files directly into the bridge's static resources
+processResources {
+    dependsOn npmBuildClient
+    from(new File(clientDir, "dist")) {
+        into "static"
+    }
+}
+
+tasks.register('packageMacApp', Exec) {
+    dependsOn bootJar // Ensures the latest JAR is built first
+    
+    // Define input and output paths
+    def jarName = bootJar.archiveFileName.get()
+    def inputDir = bootJar.destinationDirectory.get().asFile.absolutePath
+    def outputDir = "${buildDir}/dist"
+
+    workingDir projectDir
+    
+    // Run the native JDK jpackage tool
+    commandLine 'jpackage',
+        '--type', 'app-image',      // Generates a standard Mac .app folder structure
+        '--input', inputDir,        // Where your Spring Boot JAR lives
+        '--dest', outputDir,        // Where to save the output .app
+        '--name', 'MyBridgeApp',     // The name of your executable Mac App
+        '--main-jar', jarName,      // The name of your JAR file
+        '--main-class', 'org.springframework.boot.loader.launch.JarLauncher' // Spring Boot's internal launcher
 }
 

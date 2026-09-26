@@ -1,0 +1,35 @@
+name: Build Mac Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Mac app
+        run: ./gradlew packageMacApp
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyBridgeApp-mac
+          path: bridge/build/dist/**
