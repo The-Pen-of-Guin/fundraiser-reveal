@@ -3,7 +3,9 @@ plugins {
 }
 
 project.ext.lwjglVersion = "3.3.6"
-project.ext.lwjglNatives = "natives-linux"
+project.ext.lwjglNatives = System.getProperty('os.name').toLowerCase().contains('mac') ?
+    (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') :
+    'natives-linux'
 
 repositories {
 	mavenCentral()
