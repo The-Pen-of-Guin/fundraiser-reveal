@@ -3,9 +3,10 @@ package com.fundraiser.effects;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -24,6 +25,7 @@ public class ConfettiSystem {
 	private boolean initialized;
 
 	public void init() {
+		setupQuad();
 		gif = new GifAnimation("conffeti.gif");
 		initialized = true;
 	}
@@ -40,38 +42,38 @@ public class ConfettiSystem {
 		return initialized;
 	}
 
-	private static void drawOverlayQuad(int textureId, float x, float y, float w, float h,
-	                                    int screenWidth, int screenHeight) {
-	    glDisable(GL_DEPTH_TEST);
-	    glEnable(GL_BLEND);
-	    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	
-	    glMatrixMode(GL_PROJECTION);
-	    glPushMatrix();
-	    glLoadIdentity();
-	    glOrtho(0, screenWidth, screenHeight, 0, -1, 1); // top-left origin, screen-space
-	
-	    glMatrixMode(GL_MODELVIEW);
-	    glPushMatrix();
-	    glLoadIdentity();
-	
-	    glBindTexture(GL_TEXTURE_2D, textureId);
-	    glEnable(GL_TEXTURE_2D);
-	
-	    glBegin(GL_QUADS);
-	        glTexCoord2f(0, 0); glVertex2f(x,     y);
-	        glTexCoord2f(1, 0); glVertex2f(x + w, y);
-	        glTexCoord2f(1, 1); glVertex2f(x + w, y + h);
-	        glTexCoord2f(0, 1); glVertex2f(x,     y + h);
-	    glEnd();
-	
-	    glMatrixMode(GL_PROJECTION);
-	    glPopMatrix();
-	    glMatrixMode(GL_MODELVIEW);
-	    glPopMatrix();
-	
-	    glEnable(GL_DEPTH_TEST); // restore 3D state for next frame's scene
-	}
+	// private static void drawOverlayQuad(int textureId, float x, float y, float w, float h,
+	//                                     int screenWidth, int screenHeight) {
+	//     glDisable(GL_DEPTH_TEST);
+	//     glEnable(GL_BLEND);
+	//     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	//
+	//     glMatrixMode(GL_PROJECTION);
+	//     glPushMatrix();
+	//     glLoadIdentity();
+	//     glOrtho(0, screenWidth, screenHeight, 0, -1, 1); // top-left origin, screen-space
+	//
+	//     glMatrixMode(GL_MODELVIEW);
+	//     glPushMatrix();
+	//     glLoadIdentity();
+	//
+	//     glBindTexture(GL_TEXTURE_2D, textureId);
+	//     glEnable(GL_TEXTURE_2D);
+	//
+	//     glBegin(GL_QUADS);
+	//         glTexCoord2f(0, 0); glVertex2f(x,     y);
+	//         glTexCoord2f(1, 0); glVertex2f(x + w, y);
+	//         glTexCoord2f(1, 1); glVertex2f(x + w, y + h);
+	//         glTexCoord2f(0, 1); glVertex2f(x,     y + h);
+	//     glEnd();
+	//
+	//     glMatrixMode(GL_PROJECTION);
+	//     glPopMatrix();
+	//     glMatrixMode(GL_MODELVIEW);
+	//     glPopMatrix();
+	//
+	//     glEnable(GL_DEPTH_TEST); // restore 3D state for next frame's scene
+	// }
 
 
 	private int getFrameDelay(ImageReader reader, int index) throws IOException {
@@ -101,10 +103,10 @@ public class ConfettiSystem {
 
 	private record LoadedGifInfo(int[] textureIds, int[] delays, float width, float height) {}
 
-	private LoadedGifInfo readGif(String filePath) {
+	private LoadedGifInfo readGif(InputStream stream) {
 		ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
 		try {
-			reader.setInput(ImageIO.createImageInputStream(new File(filePath)));
+			reader.setInput(ImageIO.createImageInputStream(stream));
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to read GIF.");
 		}
@@ -173,6 +175,79 @@ public class ConfettiSystem {
 
 		return new LoadedGifInfo(textureIds, delays, width, height);
 	}
+	//
+	// private LoadedGifInfo readGif(String filePath) {
+	// 	ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
+	// 	try {
+	// 		reader.setInput(ImageIO.createImageInputStream(new File(filePath)));
+	// 	} catch (IOException e) {
+	// 		throw new RuntimeException("Failed to read GIF.");
+	// 	}
+	//
+	// 	int frames;
+	// 	try {
+	// 		frames = reader.getNumImages(true);
+	// 	} catch (IOException e) {
+	// 		throw new RuntimeException("Failed to read GIF frames size");
+	// 	}
+	//
+	// 	var textureIds = new int[frames];
+	// 	var delays = new int[frames];
+	// 	int width = 0;
+	// 	int height = 0;
+	// 	try {
+	// 		int logicalWidth = reader.read(0).getWidth();
+	// 		int logicalHeight = reader.read(0).getHeight();
+	// 		width = logicalWidth;
+	// 		height = logicalHeight;
+	//
+	// 		BufferedImage canvas = new BufferedImage(logicalWidth, logicalHeight, BufferedImage.TYPE_INT_ARGB);
+	// 		Graphics2D g = canvas.createGraphics();
+	// 		g.setBackground(new Color(0, 0, 0, 0));
+	//
+	// 		for (int i = 0; i < frames; i++) {
+	// 			BufferedImage raw = reader.read(i);
+	// 			IIOMetadata metadata = reader.getImageMetadata(i);
+	// 			Node root = metadata.getAsTree(metadata.getNativeMetadataFormatName());
+	//
+	// 			int x = 0, y = 0;
+	// 			String disposalMethod = "none";
+	//
+	// 			NodeList children = root.getChildNodes();
+	// 			for (int j = 0; j < children.getLength(); j++) {
+	// 				Node node = children.item(j);
+	// 				if (node.getNodeName().equals("ImageDescriptor")) {
+	// 					x = Integer.parseInt(((IIOMetadataNode) node).getAttribute("imageLeftPosition"));
+	// 					y = Integer.parseInt(((IIOMetadataNode) node).getAttribute("imageTopPosition"));
+	// 				}
+	// 				if (node.getNodeName().equals("GraphicControlExtension")) {
+	// 					disposalMethod = ((IIOMetadataNode) node).getAttribute("disposalMethod");
+	// 				}
+	// 			}
+	//
+	// 			BufferedImage previous = disposalMethod.equals("restoreToPrevious") ? deepCopy(canvas) : null;
+	//
+	// 			g.drawImage(raw, x, y, null);
+	// 			BufferedImage frameSnapshot = deepCopy(canvas);
+	//
+	// 			if (disposalMethod.equals("restoreToBackgroundColor")) {
+	// 				g.clearRect(x, y, raw.getWidth(), raw.getHeight());
+	// 			} else if (disposalMethod.equals("restoreToPrevious") && previous != null) {
+	// 				canvas = previous;
+	// 				g = canvas.createGraphics();
+	// 				g.setBackground(new Color(0, 0, 0, 0));
+	// 			}
+	//
+	// 			ByteBuffer buffer = convertBufferedImageToByteBuffer(frameSnapshot);
+	// 			textureIds[i] = uploadTexture(buffer, frameSnapshot.getWidth(), frameSnapshot.getHeight());
+	// 			delays[i] = getFrameDelay(reader, i);
+	// 		}
+	// 	} catch (IOException e) {
+	// 		throw new RuntimeException("Failed to read GIF frames.");
+	// 	}
+	//
+	// 	return new LoadedGifInfo(textureIds, delays, width, height);
+	// }
 
 	private BufferedImage deepCopy(BufferedImage src) {
 		var copy = new BufferedImage(src.getWidth(), src.getHeight(), src.getType());
@@ -243,7 +318,7 @@ public class ConfettiSystem {
 		private float height;
 
 		public GifAnimation(String path) {
-			LoadedGifInfo info = readGif(path);
+			LoadedGifInfo info = readGif(GifAnimation.class.getResourceAsStream("/gifs/conffeti.gif"));
 
 			this.textureIds = info.textureIds();
 			this.delays = info.delays();
@@ -272,6 +347,120 @@ public class ConfettiSystem {
 		public float getHeight() {
 			return height;
 		}
+	}
+
+	private int shaderProgram, vao, vbo;
+	private static String VERTEX_SRC = """
+		// vertex
+		#version 150
+		in vec2 position;
+		in vec2 texCoord;
+		out vec2 vTexCoord;
+		uniform mat4 projection;
+		
+		void main() {
+		    vTexCoord = texCoord;
+		    gl_Position = projection * vec4(position, 0.0, 1.0);
+		}
+	""";
+
+	private static String FRAGMENT_SRC = """
+		// fragment
+		#version 150
+		in vec2 vTexCoord;
+		out vec4 fragColor;
+		uniform sampler2D tex;
+		
+		void main() {
+		    fragColor = texture(tex, vTexCoord);
+		}
+	""";
+	
+	private void setupQuad() {
+	    shaderProgram = compileShaderProgram(VERTEX_SRC, FRAGMENT_SRC);
+	
+	    vao = glGenVertexArrays();
+	    glBindVertexArray(vao);
+	
+	    vbo = glGenBuffers();
+	    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	    glBufferData(GL_ARRAY_BUFFER, 4 * 4 * Float.BYTES, GL_DYNAMIC_DRAW); // 4 verts * (pos.xy + uv.xy)
+	
+	    int posLoc = glGetAttribLocation(shaderProgram, "position");
+	    glVertexAttribPointer(posLoc, 2, GL_FLOAT, false, 4 * Float.BYTES, 0);
+	    glEnableVertexAttribArray(posLoc);
+	
+	    int uvLoc = glGetAttribLocation(shaderProgram, "texCoord");
+	    glVertexAttribPointer(uvLoc, 2, GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+	    glEnableVertexAttribArray(uvLoc);
+	}
+	
+	private int compileShaderProgram(String vertSrc, String fragSrc) {
+	    int vs = glCreateShader(GL_VERTEX_SHADER);
+	    glShaderSource(vs, vertSrc);
+	    glCompileShader(vs);
+	    checkShaderCompile(vs);
+	
+	    int fs = glCreateShader(GL_FRAGMENT_SHADER);
+	    glShaderSource(fs, fragSrc);
+	    glCompileShader(fs);
+	    checkShaderCompile(fs);
+	
+	    int program = glCreateProgram();
+	    glAttachShader(program, vs);
+	    glAttachShader(program, fs);
+	    glLinkProgram(program);
+	
+	    glDeleteShader(vs);
+	    glDeleteShader(fs);
+	    return program;
+	}
+	
+	private void checkShaderCompile(int shader) {
+	    if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
+	        throw new RuntimeException(glGetShaderInfoLog(shader));
+	    }
+	}
+
+	private void drawOverlayQuad(int textureId, float x, float y, float w, float h,
+	                              int screenWidth, int screenHeight) {
+	    glDisable(GL_DEPTH_TEST);
+	    glEnable(GL_BLEND);
+	    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	
+	    float[] vertices = {
+	        // pos.x, pos.y,      uv.x, uv.y
+	        x,     y,             0f, 0f,
+	        x + w, y,             1f, 0f,
+	        x + w, y + h,         1f, 1f,
+	        x,     y + h,         0f, 1f
+	    };
+	
+	    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	    FloatBuffer buf = BufferUtils.createFloatBuffer(vertices.length).put(vertices);
+	    buf.flip();
+	    glBufferSubData(GL_ARRAY_BUFFER, 0, buf);
+	
+	    // Orthographic projection matrix, top-left origin — manual 4x4, column-major
+	    float[] projection = {
+	        2f / screenWidth, 0, 0, 0,
+	        0, -2f / screenHeight, 0, 0,
+	        0, 0, -1, 0,
+	        -1, 1, 0, 1
+	    };
+	
+	    glUseProgram(shaderProgram);
+	    int projLoc = glGetUniformLocation(shaderProgram, "projection");
+	    glUniformMatrix4fv(projLoc, false, projection);
+	
+	    glActiveTexture(GL_TEXTURE0);
+	    glBindTexture(GL_TEXTURE_2D, textureId);
+	    glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
+	
+	    glBindVertexArray(vao);
+	    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	
+	    glEnable(GL_DEPTH_TEST);
 	}
 }
 
