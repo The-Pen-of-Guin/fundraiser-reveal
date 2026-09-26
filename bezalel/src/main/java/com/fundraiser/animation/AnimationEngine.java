@@ -37,6 +37,7 @@ public class AnimationEngine {
 	private float[] textColor = {1.0f, 1.0f, 1.0f};
 	private String font = "Roboto";
 	private int fontSize = 200;
+	private boolean initialized = false;
 
 	public void setText(String text) { this.text.set(text); }
 	public String getText() { return this.text.get(); }
@@ -50,6 +51,7 @@ public class AnimationEngine {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
 		init();
+		initialized = true;
 		loop();
 		cleanup();
 	}
@@ -57,6 +59,7 @@ public class AnimationEngine {
 	public void run(Path outputFile, int fps, int durationSeconds) {
 		System.out.println("Duration: " + durationSeconds + " seconds");
 		init();
+		initialized = true;
 		try (var encoder = new FFmpegEncoder(outputFile, 1920, 1080, fps)) {
 			loop(encoder, fps, durationSeconds);
 		} catch (IOException e) {
@@ -64,6 +67,10 @@ public class AnimationEngine {
 		} finally {
 			cleanup();
 		}
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	private void init() {

@@ -47,23 +47,31 @@ public class Animator {
 		animationEngine.setText(centsToStringDollars(currentAmountCents));
 
 		new Thread(() -> {
-			if (outputFile == null)
-				animationEngine.run();
-			else
-				animationEngine.run(outputFile, fps, durationSeconds + 28); // Adding 28 seconds for confetti
+			while (!animationEngine.isInitialized()) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					System.out.println("Sleep interrupted.");
+				}
+			}
+
+			processAnimationNodes(animationNodes);
+
+			var startTime = Instant.now();
+
+			while (Duration.between(startTime, Instant.now()).toMillis() <= 3000);
+
+			animationEngine.setUseConfetti(true);
+
+			while (Duration.between(startTime, Instant.now()).toMillis() <= 25000);
+
+			animationEngine.setUseConfetti(false);
 		}).start();
 
-		processAnimationNodes(animationNodes);
-
-		var startTime = Instant.now();
-
-		while (Duration.between(startTime, Instant.now()).toMillis() <= 3000);
-
-		animationEngine.setUseConfetti(true);
-
-		while (Duration.between(startTime, Instant.now()).toMillis() <= 25000);
-
-		animationEngine.setUseConfetti(false);
+		if (outputFile == null)
+			animationEngine.run();
+		else
+			animationEngine.run(outputFile, fps, durationSeconds + 28); // Adding 28 seconds for confetti
 	}
 
 	public void saveSettings() {
