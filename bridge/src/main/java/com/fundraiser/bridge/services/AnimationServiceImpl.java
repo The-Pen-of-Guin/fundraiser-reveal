@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fundraiser.animation.Animator;
 import com.fundraiser.animation.nodes.AnimationNode;
+import com.fundraiser.bridge.util.GlfwDispatcher;
 import com.fundraiser.utils.settings.models.Settings;
 
 @Service
@@ -23,26 +24,30 @@ public class AnimationServiceImpl implements AnimationService {
 
 	@Override
 	public void playAnimation() {
-		setupAnimation();
+		GlfwDispatcher.queue.add(() -> {
+			setupAnimation();
 
-		new Thread(() -> {
-			animator.run();
-		}).start();
+			new Thread(() -> {
+				animator.run();
+			}).start();
+		});
 	}
 
 	@Override
 	public void saveAnimation() {
-		setupAnimation();
+		GlfwDispatcher.queue.add(() -> {
+			setupAnimation();
 
-		int durationMs = 0;
-		for (AnimationNode node : nodeService.getNodes()) {
-			durationMs = durationMs + node.animation().getDurationMs() + node.animation().getStartDelayMs();
-		}
+			int durationMs = 0;
+			for (AnimationNode node : nodeService.getNodes()) {
+				durationMs = durationMs + node.animation().getDurationMs() + node.animation().getStartDelayMs();
+			}
 
-		final int durationSeconds = durationMs/1000;
-		new Thread(() -> {
-			animator.run(Path.of("./output.mp4"), 60, durationSeconds);
-		}).start();
+			final int durationSeconds = durationMs/1000;
+			new Thread(() -> {
+				animator.run(Path.of("./output.mp4"), 60, durationSeconds);
+			}).start();
+		});
 	}
 
 	@Override
@@ -52,13 +57,15 @@ public class AnimationServiceImpl implements AnimationService {
 
 	@Override
 	public void saveSettings() {
-		setupAnimation();
-		animator.saveSettings();
+		GlfwDispatcher.queue.add(() -> {
+			setupAnimation();
+			animator.saveSettings();
+		});
 	}
 
 	@Override
 	public Settings loadSettings() {
-		return animator.loadSettings();
+		return GlfwDispatcher.runAndWait(() -> animator.loadSettings());
 	}
 
 	private void setupAnimation() {
