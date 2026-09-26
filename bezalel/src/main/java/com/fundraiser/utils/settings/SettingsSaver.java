@@ -12,7 +12,7 @@ public class SettingsSaver {
 	public static void save(Settings settings) {
 		try {
 			objectMapper.writerWithDefaultPrettyPrinter()
-				.writeValue(new File("bezalel-settings.json"), settings);
+				.writeValue(getSettingsFile(), settings);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -20,10 +20,27 @@ public class SettingsSaver {
 
 	public static Settings load() {
 		try {
-			var settings = objectMapper.readValue(new File("bezalel-settings.json"), Settings.class);
+			var settings = objectMapper.readValue(getSettingsFile(), Settings.class);
 			return settings;
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load from settings file: ", e);
 		}
+	}
+
+	private static File getSettingsFile() {
+	    String os = System.getProperty("os.name").toLowerCase();
+	    String userHome = System.getProperty("user.home");
+	    File dir;
+	
+	    if (os.contains("mac")) {
+	        dir = new File(userHome, "Library/Application Support/MyBridgeApp");
+	    } else if (os.contains("win")) {
+	        dir = new File(System.getenv("APPDATA"), "MyBridgeApp");
+	    } else {
+	        dir = new File(userHome, ".config/MyBridgeApp"); // Linux convention
+	    }
+	
+	    dir.mkdirs();
+	    return new File(dir, "settings.json");
 	}
 }
