@@ -1,19 +1,13 @@
 package com.fundraiser.bridge.services;
 
-import java.nio.file.Path;
-import java.util.ArrayDeque;
-
 import org.springframework.stereotype.Service;
 
-import com.fundraiser.animation.Animator;
-import com.fundraiser.animation.nodes.AnimationNode;
+import com.fundraiser.bridge.util.AnimatorUtil;
 import com.fundraiser.bridge.util.GlfwDispatcher;
 import com.fundraiser.utils.settings.models.Settings;
 
 @Service
 public class AnimationServiceImpl implements AnimationService {
-	private final Animator animator = new Animator();
-
 	private final NodeService nodeService;
 	private final SceneService sceneService;
 
@@ -26,10 +20,7 @@ public class AnimationServiceImpl implements AnimationService {
 	public void playAnimation() {
 		GlfwDispatcher.queue.add(() -> {
 			setupAnimation();
-
-			new Thread(() -> {
-				animator.run();
-			}).start();
+			AnimatorUtil.playAnimation();
 		});
 	}
 
@@ -37,16 +28,7 @@ public class AnimationServiceImpl implements AnimationService {
 	public void saveAnimation() {
 		GlfwDispatcher.queue.add(() -> {
 			setupAnimation();
-
-			int durationMs = 0;
-			for (AnimationNode node : nodeService.getNodes()) {
-				durationMs = durationMs + node.animation().getDurationMs() + node.animation().getStartDelayMs();
-			}
-
-			final int durationSeconds = durationMs/1000;
-			new Thread(() -> {
-				animator.run(Path.of("./output.mp4"), 60, durationSeconds);
-			}).start();
+			AnimatorUtil.saveAnimation(nodeService.getNodes());
 		});
 	}
 
@@ -59,29 +41,26 @@ public class AnimationServiceImpl implements AnimationService {
 	public void saveSettings() {
 		GlfwDispatcher.queue.add(() -> {
 			setupAnimation();
-			animator.saveSettings();
+			AnimatorUtil.saveSettings();
 		});
 	}
 
 	@Override
 	public Settings loadSettings() {
-		return GlfwDispatcher.runAndWait(() -> animator.loadSettings());
+		return GlfwDispatcher.runAndWait(() -> AnimatorUtil.loadSettings());
 	}
 
 	private void setupAnimation() {
 		var nodes = nodeService.getNodes();
-		animator.setAnimationNodes(new ArrayDeque<>(nodes));
 		
 		var backgroundColor = sceneService.getBackgroundColor().orElseThrow(() -> new RuntimeException("Background color has not been set."));
-		animator.setBackgroundColor(backgroundColor.r()/255f, backgroundColor.g()/255f, backgroundColor.b()/255f);
 
 		var textColor = sceneService.getTextColor().orElseThrow(() -> new RuntimeException("Text color has not been set."));
-		animator.setTextColor(textColor.r()/255f, textColor.g()/255f, textColor.b()/255f);
 
 		var textFont = sceneService.getTextFont().orElseThrow(() -> new RuntimeException("Text font has not been set."));
-		animator.setTextFont(textFont);
 
 		var fontSize = sceneService.getTextFontSize().orElseThrow(() -> new RuntimeException("Font size has not been set."));
-		animator.setTextFontSize(fontSize);
+
+		AnimatorUtil.setupAnimation(nodes, backgroundColor, textColor, textFont, fontSize);
 	}
 }
