@@ -31,7 +31,7 @@ public class AnimatorUtil {
 	}
 
 	public static Settings loadSettings() {
-		return GlfwDispatcher.runAndWait(() -> animator.loadSettings());
+		return animator.loadSettings();
 	}
 
 	public static void setupAnimation(
