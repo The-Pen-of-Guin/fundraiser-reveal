@@ -1,5 +1,6 @@
 package com.fundraiser.bridge.util;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.List;
@@ -23,7 +24,7 @@ public class AnimatorUtil {
 		}
 
 		final int durationSeconds = durationMs/1000;
-		animator.run(Path.of("./output.mp4"), 60, durationSeconds);
+		animator.run(getVideoOutputFile().toPath(), 60, durationSeconds);
 	}
 
 	public static void saveSettings() {
@@ -50,5 +51,22 @@ public class AnimatorUtil {
 		animator.setTextFont(textFont);
 
 		animator.setTextFontSize(fontSize);
+	}
+
+	private static File getVideoOutputFile() {
+	    String os = System.getProperty("os.name").toLowerCase();
+	    String userHome = System.getProperty("user.home");
+	    File dir;
+	
+	    if (os.contains("mac")) {
+	        dir = new File(userHome, "Movies/MyBridgeApp");
+	    } else if (os.contains("win")) {
+	        dir = new File(System.getenv("USERPROFILE"), "Videos\\MyBridgeApp");
+	    } else {
+	        dir = new File(userHome, "Videos/MyBridgeApp"); // Linux (XDG convention)
+	    }
+	
+	    dir.mkdirs();
+	    return new File(dir, "gic-reveal.mp4");
 	}
 }
