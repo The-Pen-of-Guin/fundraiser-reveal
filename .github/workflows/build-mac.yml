@@ -24,7 +24,7 @@ jobs:
 
       - name: Download ffmpeg (macOS)
         run: |
-          mkdir -p ../bezalel/src/main/resources/ffmpeg/mac-arm64
+          mkdir -p bezalel/src/main/resources/ffmpeg/mac-arm64
           curl -L https://www.osxexperts.net/ffmpeg7arm.zip -o ffmpeg.zip
           unzip ffmpeg.zip -d bezalel/src/main/resources/ffmpeg/mac-arm64
 
