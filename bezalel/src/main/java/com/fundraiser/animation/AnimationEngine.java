@@ -235,8 +235,8 @@ public class AnimationEngine {
 
 			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 			glViewport(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
-        	        // glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
-        	        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        	        glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
+        	        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			if (useConfetti) {
 				for (int i = 0; i < particleSystems.size(); i++) {
