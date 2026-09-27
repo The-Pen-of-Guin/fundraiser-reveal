@@ -112,6 +112,6 @@ tasks.register('packageMacApp', Exec) {
         '--main-jar', jarName,      // The name of your JAR file
         '--main-class', 'org.springframework.boot.loader.launch.JarLauncher', // Spring Boot's internal launcher
         '--java-options', '-XstartOnFirstThread'
-        '--app-content', "${projectDir}/src/main/resources/ffmpeg/mac-arm64"
+        '--app-content', "${projectDir}../bezalel/src/main/resources/ffmpeg/mac-arm64"
 }
 
