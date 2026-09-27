@@ -111,7 +111,7 @@ tasks.register('packageMacApp', Exec) {
         '--name', 'MyBridgeApp',     // The name of your executable Mac App
         '--main-jar', jarName,      // The name of your JAR file
         '--main-class', 'org.springframework.boot.loader.launch.JarLauncher', // Spring Boot's internal launcher
-        '--java-options', '-XstartOnFirstThread'
+        '--java-options', '-XstartOnFirstThread',
         '--app-content', "${projectDir}../bezalel/src/main/resources/ffmpeg/mac-arm64"
 }
 
