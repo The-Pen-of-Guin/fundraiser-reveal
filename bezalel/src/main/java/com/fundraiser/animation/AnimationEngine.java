@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
@@ -214,38 +215,45 @@ public class AnimationEngine {
 	}
 
 	private void loop(FFmpegEncoder encoder, int fps, int durationSeconds) throws IOException {
+		createOffscreenFramebuffer();
+
         	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
         	int totalFrames = fps * durationSeconds;
-        	ByteBuffer pixelBuffer = null;
+        	ByteBuffer pixelBuffer = BufferUtils.createByteBuffer(OUTPUT_HEIGHT * OUTPUT_WIDTH * 4);
 
         	for (int frame = 0; frame < totalFrames && !glfwWindowShouldClose(window); frame++) {
-        	        IntBuffer w = BufferUtils.createIntBuffer(1);
-        	        IntBuffer h = BufferUtils.createIntBuffer(1);
-        	        glfwGetFramebufferSize(window, w, h);
-        	        int width = w.get(0), height = h.get(0);
+        	        // IntBuffer w = BufferUtils.createIntBuffer(1);
+        	        // IntBuffer h = BufferUtils.createIntBuffer(1);
+        	        // glfwGetFramebufferSize(window, w, h);
+        	        // int width = w.get(0), height = h.get(0);
+        	        //
+        	        // if (pixelBuffer == null) pixelBuffer = BufferUtils.createByteBuffer(width * height * 4);
+        	        //
+        	        // glViewport(0, 0, width, height);
+        	        // glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
+        	        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        	        if (pixelBuffer == null) pixelBuffer = BufferUtils.createByteBuffer(width * height * 4);
-
-        	        glViewport(0, 0, width, height);
-        	        glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
-        	        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			glViewport(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+        	        // glClearColor(bgColor[0], bgColor[1], bgColor[2], 1f);
+        	        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			if (useConfetti) {
 				for (int i = 0; i < particleSystems.size(); i++) {
 					var scale = 2.5f;
 					particleSystems.get(i)
 						.update(
-							width / 2f
+							OUTPUT_WIDTH / 2f
 							- (float)(particleSystems.size() - 1) * 135f * scale
 							+ 135f * 2f * scale * (float)i,
-							height / 2f,
+							OUTPUT_HEIGHT / 2f,
 							scale, scale,
-							width, height
+							OUTPUT_WIDTH, OUTPUT_HEIGHT
 						);
 				}
 			}
 
-        	        nvgBeginFrame(vg, width, height, 1f);
+        	        nvgBeginFrame(vg, OUTPUT_WIDTH, OUTPUT_HEIGHT, 1f);
         	        NanoVG.nvgFontSize(vg, fontSize);
         	        NanoVG.nvgFontFace(vg, "font");
         	        NanoVG.nvgTextAlign(vg, NanoVG.NVG_ALIGN_CENTER | NanoVG.NVG_ALIGN_MIDDLE);
@@ -254,12 +262,24 @@ public class AnimationEngine {
         	                color.r(textColor[0]).g(textColor[1]).b(textColor[2]).a(1f);
         	                NanoVG.nvgFillColor(vg, color);
         	        }
-        	        NanoVG.nvgText(vg, width / 2f, height / 2f, getText());
+        	        NanoVG.nvgText(vg, OUTPUT_WIDTH / 2f, OUTPUT_HEIGHT / 2f, getText());
         	        nvgEndFrame(vg);
 
         	        pixelBuffer.clear();
-        	        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
+        	        glReadPixels(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
         	        encoder.writeFrame(pixelBuffer);
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // 0 = window's default framebuffer
+			
+			int[] winW = new int[1], winH = new int[1];
+			glfwGetFramebufferSize(window, winW, winH);
+			
+			glBlitFramebuffer(
+			        0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT,   // source rect (your FBO)
+			        0, 0, winW[0], winH[0],              // dest rect (window, scaled to fit)
+			        GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
 
         	        glfwSwapBuffers(window);
         	        glfwPollEvents();
@@ -296,5 +316,25 @@ public class AnimationEngine {
 		buffer.flip();
 		
 		return buffer;
+	}
+
+	private int fbo, colorTexture;
+	private static final int OUTPUT_WIDTH = 1920, OUTPUT_HEIGHT = 1080;
+
+	private void createOffscreenFramebuffer() {
+	    fbo = glGenFramebuffers();
+	    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	
+	    colorTexture = glGenTextures();
+	    glBindTexture(GL_TEXTURE_2D, colorTexture);
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, OUTPUT_WIDTH, OUTPUT_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
+	
+	    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	        throw new RuntimeException("Failed to create offscreen framebuffer");
+	    }
+	    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
