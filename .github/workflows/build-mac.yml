@@ -22,6 +22,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Download ffmpeg (macOS)
+        run: |
+          curl -L https://www.osxexperts.net/ffmpeg7arm.zip -o ffmpeg.zip
+          unzip ffmpeg.zip -d src/main/resources/ffmpeg/mac
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
