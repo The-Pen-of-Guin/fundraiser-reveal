@@ -30,7 +30,13 @@ public class FFmpegEncoder implements AutoCloseable {
     public void writeFrame(ByteBuffer buffer) throws IOException {
         byte[] arr = new byte[buffer.remaining()];
         buffer.get(arr);
-        stdin.write(arr);
+        try {
+            stdin.write(arr);
+            stdin.flush();
+        } catch (IOException e) {
+            System.err.println("Write failed. ffmpeg alive? " + process.isAlive() + " Exit code: " + (process.isAlive() ? "N/A" : process.exitValue()));
+            throw e;
+        }
     }
 
     @Override

@@ -219,9 +219,11 @@ public class AnimationEngine {
 
         	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
         	int totalFrames = fps * durationSeconds;
+		int frameCount = 0;
         	ByteBuffer pixelBuffer = BufferUtils.createByteBuffer(OUTPUT_HEIGHT * OUTPUT_WIDTH * 4);
 
         	for (int frame = 0; frame < totalFrames && !glfwWindowShouldClose(window); frame++) {
+			frameCount = frame;
         	        // IntBuffer w = BufferUtils.createIntBuffer(1);
         	        // IntBuffer h = BufferUtils.createIntBuffer(1);
         	        // glfwGetFramebufferSize(window, w, h);
@@ -284,6 +286,7 @@ public class AnimationEngine {
         	        glfwSwapBuffers(window);
         	        glfwPollEvents();
         	}
+		System.out.println("Loop ended. Frame: " + frameCount + "/" + totalFrames + ", shouldClose: " + glfwWindowShouldClose(window));
 	}
 
 	private void cleanup() {
